@@ -6,14 +6,14 @@ Teknolojiler
 - Angular (16.2.0), NodeJS (25.4.0)
 - Docker (29.0.1)
 
-IDE : IntellijIdea
+IDE : Intellij IDEA
 
 
 Kullanım
 ----------
 - Proje root klasörüne gidip : docker-compose -up -d
 - MongoDB Compass -> new Connection -> mongodb://localhost:27017/
-- IntellijIdea'da DynamicObjectSystemApplication sınıfını run ya da debug edelim
+- Intellij IDEA'da DynamicObjectSystemApplication sınıfını run ya da debug edelim
 - cd frontend ile frontend projesine geçelim. Sistemde node kurulu değilse kuralım. Ardından npm install -> npm start
 - http://localhost:4200/ önyüz erişimi
 - http://localhost:8080/swagger-ui/index.html swagger erişimi
