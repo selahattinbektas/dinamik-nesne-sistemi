@@ -1,0 +1,52 @@
+<section class="card">
+  <h2 class="section-title">UI Content Yönetimi</h2>
+  <app-ui-content-form
+    [formGroup]="form"
+    [contentTypes]="contentTypes"
+    [uiContents]="uiContents"
+    [propertyItemOptions]="propertyItemOptions"
+    [isLoading]="isLoading"
+    [errorMessage]="errorMessage"
+    (submitForm)="submit()"
+    (refresh)="loadUiContents()"
+    (editUiContent)="openEditDialog($event)"
+    (deleteUiContent)="deleteUiContent($event)"
+  ></app-ui-content-form>
+</section>
+
+<div class="modal-backdrop" *ngIf="isEditDialogOpen">
+  <div class="modal">
+    <h3 class="modal-title">UI Content Güncelle</h3>
+    <form [formGroup]="editForm" (ngSubmit)="updateUiContent()">
+      <div class="form-grid">
+        <label class="form-field">
+          İçerik Adı
+          <input type="text" formControlName="name" disabled />
+        </label>
+        <label class="form-field">
+          CSS Class
+          <input type="text" formControlName="cssClassName" />
+        </label>
+        <label class="form-field">
+          Tip
+          <select formControlName="type">
+            <option *ngFor="let type of contentTypes" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+        <label class="form-field">
+          Item ID List
+          <select formControlName="itemIdList" multiple>
+            <option *ngFor="let option of propertyItemOptions" [ngValue]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" (click)="closeEditDialog()">Vazgeç</button>
+        <button type="submit" [disabled]="isSaving">Güncelle</button>
+      </div>
+    </form>
+  </div>
+</div>

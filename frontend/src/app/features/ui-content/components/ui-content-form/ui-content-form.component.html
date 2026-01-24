@@ -1,0 +1,66 @@
+<form [formGroup]="formGroup" (ngSubmit)="submitForm.emit()">
+  <div class="form-grid">
+    <label class="form-field">
+      İçerik Adı
+      <input type="text" formControlName="name" placeholder="IHA-DETAIL" />
+    </label>
+    <label class="form-field">
+      CSS Class
+      <input type="text" formControlName="cssClassName" placeholder="iha-detail" />
+    </label>
+    <label class="form-field">
+      Tip
+      <select formControlName="type">
+        <option *ngFor="let type of contentTypes" [value]="type">{{ type }}</option>
+      </select>
+    </label>
+    <label class="form-field">
+      Item ID List
+      <select formControlName="itemIdList" multiple>
+        <option *ngFor="let option of propertyItemOptions" [ngValue]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+  </div>
+
+  <div style="margin-top: 16px; display: flex; gap: 12px;">
+    <button type="submit">Kaydet</button>
+    <button type="button" class="secondary" (click)="refresh.emit()">Yenile</button>
+  </div>
+</form>
+
+<p *ngIf="errorMessage" style="margin-top: 12px; color: #dc2626;">{{ errorMessage }}</p>
+<p *ngIf="isLoading" style="margin-top: 12px;">Yükleniyor...</p>
+
+<table class="table" *ngIf="uiContents.length">
+  <thead>
+    <tr>
+      <th>Ad</th>
+      <th>CSS</th>
+      <th>Tip</th>
+      <th>Items</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of uiContents">
+      <td>{{ item.name }}</td>
+      <td>{{ item.cssClassName }}</td>
+      <td><span class="badge">{{ item.type }}</span></td>
+      <td>{{ item.itemIdList?.join(', ') }}</td>
+      <td>
+        <div class="table-actions">
+          <button type="button" class="secondary" (click)="editUiContent.emit(item)" [disabled]="isLoading">
+            Güncelle
+          </button>
+          <button type="button" class="danger" (click)="deleteUiContent.emit(item)" [disabled]="isLoading">
+            Sil
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<app-empty-state *ngIf="!uiContents.length && !isLoading" message="Henüz UI content kaydı yok."></app-empty-state>

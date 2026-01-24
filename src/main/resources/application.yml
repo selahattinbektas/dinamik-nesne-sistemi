@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/dynamic_object_system}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

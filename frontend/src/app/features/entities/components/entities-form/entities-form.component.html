@@ -1,0 +1,98 @@
+<form [formGroup]="formGroup" (ngSubmit)="submitForm.emit()">
+  <div class="form-grid">
+    <label class="form-field">
+      Entity ID
+      <input type="text" formControlName="id" placeholder="IHA-001" />
+    </label>
+    <label class="form-field">
+      Metadata Adı
+      <select formControlName="metaDataName" (change)="metaDataChange.emit(formGroup.value.metaDataName)">
+        <option value="">Seçiniz</option>
+        <option *ngFor="let item of metadataList" [value]="item.name">{{ item.name }}</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="form-grid" [formGroup]="propertiesForm" style="margin-top: 16px;">
+    <ng-container *ngFor="let item of propertyItems">
+      <ng-container [ngSwitch]="item.type">
+        <label class="form-field" *ngSwitchCase="'TEXT'">
+          {{ item.title }}
+          <input type="text" [formControlName]="item.itemName" />
+        </label>
+        <label class="form-field" *ngSwitchCase="'TEXTAREA'">
+          {{ item.title }}
+          <textarea rows="3" [formControlName]="item.itemName"></textarea>
+        </label>
+        <label class="form-field" *ngSwitchCase="'NUMBER'">
+          {{ item.title }}
+          <input type="number" [formControlName]="item.itemName" />
+        </label>
+        <label class="form-field" *ngSwitchCase="'DATE'">
+          {{ item.title }}
+          <input type="date" [formControlName]="item.itemName" />
+        </label>
+        <label class="form-field" *ngSwitchCase="'SELECT'">
+          {{ item.title }}
+          <select [formControlName]="item.itemName">
+            <option *ngFor="let option of item.options" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </label>
+        <div class="form-field" *ngSwitchCase="'RADIO'">
+          <span>{{ item.title }}</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+            <label *ngFor="let option of item.options" style="display: flex; align-items: center; gap: 6px;">
+              <input type="radio" [formControlName]="item.itemName" [value]="option.value" />
+              {{ option.label }}
+            </label>
+          </div>
+        </div>
+        <label class="form-field" *ngSwitchCase="'CHECKBOX'" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" [formControlName]="item.itemName" />
+          {{ item.title }}
+        </label>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div style="margin-top: 16px; display: flex; gap: 12px;">
+    <button type="submit">Kaydet</button>
+  </div>
+</form>
+
+<p *ngIf="errorMessage" style="margin-top: 12px; color: #dc2626;">{{ errorMessage }}</p>
+
+<p *ngIf="isLoading" style="margin-top: 12px;">Yükleniyor...</p>
+
+<table class="table" *ngIf="entities.length">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Metadata</th>
+      <th>Properties</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of entities">
+      <td>{{ item.id }}</td>
+      <td><span class="badge">{{ item.metaDataName }}</span></td>
+      <td><pre style="margin: 0; white-space: pre-wrap;">{{ item.properties | json }}</pre></td>
+      <td>
+        <div class="table-actions">
+          <button type="button" class="secondary" [routerLink]="['/entities', item.id, 'properties']">
+            Property Yönet
+          </button>
+          <button type="button" class="secondary" (click)="viewClassification.emit(item)">
+            Haritada Sınıflandırma
+          </button>
+          <button type="button" class="secondary" (click)="viewUiContent.emit(item)">
+            UI Content Detay
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<app-empty-state *ngIf="!entities.length && !isLoading" message="Henüz entity kaydı yok."></app-empty-state>

@@ -1,0 +1,75 @@
+<section class="card">
+  <h2 class="section-title">Options Yönetimi</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label class="form-field">
+        Value
+        <input type="text" formControlName="value" placeholder="TEAM_ALPHA" />
+      </label>
+      <label class="form-field">
+        Label
+        <input type="text" formControlName="label" placeholder="Team Alpha" />
+      </label>
+    </div>
+
+    <div style="margin-top: 16px; display: flex; gap: 12px;">
+      <button type="submit" [disabled]="isSaving">Kaydet</button>
+    </div>
+  </form>
+
+  <p *ngIf="errorMessage" style="margin-top: 12px; color: #dc2626;">{{ errorMessage }}</p>
+  <p *ngIf="isLoading" style="margin-top: 12px;">Yükleniyor...</p>
+
+  <table class="table" *ngIf="options.length">
+    <thead>
+      <tr>
+        <th>Value</th>
+        <th>Label</th>
+        <th>Property Item Sayısı</th>
+        <th>İşlemler</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of options">
+        <td>{{ item.option.value }}</td>
+        <td>{{ item.option.label }}</td>
+        <td>{{ item.usageCount }}</td>
+        <td>
+          <div class="table-actions">
+            <button type="button" class="secondary" (click)="openEditDialog(item.option)" [disabled]="isLoading">
+              Güncelle
+            </button>
+            <button type="button" class="danger" (click)="deleteOption(item.option)" [disabled]="isLoading">
+              Sil
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <app-empty-state *ngIf="!options.length && !isLoading" message="Henüz option kaydı yok."></app-empty-state>
+</section>
+
+<div class="modal-backdrop" *ngIf="isEditDialogOpen">
+  <div class="modal">
+    <h3 class="modal-title">Option Güncelle</h3>
+    <form [formGroup]="editForm" (ngSubmit)="updateOption()">
+      <div class="form-grid">
+        <label class="form-field">
+          Value
+          <input type="text" formControlName="value" disabled />
+        </label>
+        <label class="form-field">
+          Label
+          <input type="text" formControlName="label" />
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" (click)="closeEditDialog()">Vazgeç</button>
+        <button type="submit" [disabled]="isSaving">Güncelle</button>
+      </div>
+    </form>
+  </div>
+</div>

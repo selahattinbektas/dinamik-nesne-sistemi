@@ -1,0 +1,85 @@
+<form [formGroup]="formGroup" (ngSubmit)="submitForm.emit()">
+  <div class="form-grid">
+    <label class="form-field">
+      Metadata Adı
+      <input type="text" formControlName="name" placeholder="IHA" />
+    </label>
+
+    <label class="form-field">
+      Entity Type
+      <select formControlName="entityType">
+        <option *ngFor="let type of entityTypes" [value]="type">{{ type }}</option>
+      </select>
+    </label>
+  </div>
+
+  <div style="margin-top: 16px; display: flex; gap: 12px;">
+    <button type="submit">Kaydet</button>
+  </div>
+</form>
+
+
+<form [formGroup]="searchFormGroup" (ngSubmit)="searchMetaData.emit()" style="margin-top: 24px;">
+  <h3 class="section-title" style="font-size: 16px;">Arama</h3>
+  <div class="form-grid">
+    <label class="form-field">
+      Metadata Adı
+      <input type="text" formControlName="name" placeholder="En az 2 karakter" />
+    </label>
+  </div>
+  <div style="margin-top: 12px; display: flex; gap: 12px;">
+    <button type="submit" [disabled]="searchFormGroup.invalid">Ara</button>
+    <button type="button" class="secondary" (click)="resetSearch.emit()">Sıfırla</button>
+  </div>
+</form>
+
+<p *ngIf="errorMessage" style="margin-top: 12px; color: #dc2626;">{{ errorMessage }}</p>
+<p *ngIf="isLoading" style="margin-top: 12px;">Yükleniyor...</p>
+
+<table class="table" *ngIf="metadataList.length">
+  <thead>
+    <tr>
+      <th>Ad</th>
+      <th>Entity Type</th>
+      <th>Property Item Sayısı</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of metadataList">
+      <td>{{ item.name }}</td>
+      <td><span class="badge">{{ item.entityType }}</span></td>
+      <td>{{ item.propertyItemList?.length || 0 }}</td>
+      <td>
+        <div class="table-actions">
+        <button
+          type="button"
+          class="secondary"
+          (click)="editMetaData.emit(item)"
+          [disabled]="isLoading"
+        >
+          Güncelle
+        </button>
+        <button
+          type="button"
+          class="secondary"
+          (click)="managePropertyItems.emit(item)"
+          [disabled]="isLoading"
+        >
+          PropertyItem Yönet
+        </button>
+        <button
+          type="button"
+          class="danger"
+          (click)="deleteMetaData.emit(item.name)"
+          [disabled]="isLoading"
+        >
+          Sil
+        </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<app-empty-state *ngIf="!metadataList.length && !isLoading" message="Henüz metadata kaydı yok."></app-empty-state>

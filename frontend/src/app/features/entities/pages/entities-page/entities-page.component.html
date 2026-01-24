@@ -1,0 +1,51 @@
+<section class="card">
+  <h2 class="section-title">Entity Yönetimi</h2>
+  <app-entities-form
+    [formGroup]="form"
+    [propertiesForm]="propertiesForm"
+    [entities]="entities"
+    [metadataList]="metadataList"
+    [propertyItems]="propertyItems"
+    [isLoading]="isLoading"
+    [errorMessage]="errorMessage"
+    (submitForm)="submit()"
+    (metaDataChange)="onMetaDataChange($event)"
+    (viewClassification)="openClassificationDialog($event)"
+    (viewUiContent)="openUiContentDialog($event)"
+  ></app-entities-form>
+</section>
+
+<div class="modal-backdrop" *ngIf="isClassificationDialogOpen">
+  <div class="modal">
+    <h3 class="modal-title">Haritada Sınıflandırma</h3>
+    <ng-container *ngIf="classificationDetail; else noClassification">
+      <pre style="margin: 0; white-space: pre-wrap;">{{ classificationDetail | json }}</pre>
+    </ng-container>
+    <ng-template #noClassification>
+      <p style="margin: 0;">Classification bulunamadı.</p>
+    </ng-template>
+    <div class="modal-actions">
+      <button type="button" class="secondary" (click)="closeClassificationDialog()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isUiContentDialogOpen">
+  <div class="modal">
+    <h3 class="modal-title">UI Content Detay</h3>
+    <ng-container *ngIf="uiContentDetails.length; else noUiContent">
+      <div style="display: grid; gap: 16px;">
+        <div *ngFor="let content of uiContentDetails">
+          <strong>{{ content.name }} ({{ content.type }})</strong>
+          <pre style="margin: 8px 0 0; white-space: pre-wrap;">{{ content.properties | json }}</pre>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #noUiContent>
+      <p style="margin: 0;">UI Content bulunamadı.</p>
+    </ng-template>
+    <div class="modal-actions">
+      <button type="button" class="secondary" (click)="closeUiContentDialog()">Kapat</button>
+    </div>
+  </div>
+</div>

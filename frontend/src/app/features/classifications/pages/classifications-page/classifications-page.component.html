@@ -1,0 +1,141 @@
+<section class="card">
+  <h2 class="section-title">Classification Yönetimi</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label class="form-field">
+        Draw Classification
+        <input type="text" formControlName="drawClassification" />
+      </label>
+      <label class="form-field">
+        Classification
+        <input type="text" formControlName="classification" />
+      </label>
+      <label class="form-field">
+        Metadata
+        <select formControlName="metaDataName">
+          <option value="">Seçiniz</option>
+          <option *ngFor="let item of metadataList" [value]="item.name">{{ item.name }}</option>
+        </select>
+      </label>
+      <label class="form-field">
+        Metadata Code
+        <input type="text" formControlName="metaDataCode" />
+      </label>
+      <label class="form-field">
+        Symbol Code
+        <input type="text" formControlName="symbolCode" />
+      </label>
+      <label class="form-field">
+        Unit Type
+        <input type="text" formControlName="unitType" />
+      </label>
+    </div>
+
+    <div style="margin-top: 12px;">
+      <label class="form-field" style="display: flex; align-items: center; gap: 8px;">
+        <input type="checkbox" formControlName="undeletable" />
+        Undeletable
+      </label>
+    </div>
+
+    <div style="margin-top: 16px; display: flex; gap: 12px;">
+      <button type="submit" [disabled]="isLoading">Kaydet</button>
+    </div>
+  </form>
+
+  <p *ngIf="errorMessage" style="margin-top: 12px; color: #dc2626;">{{ errorMessage }}</p>
+  <p *ngIf="isLoading" style="margin-top: 12px;">Yükleniyor...</p>
+
+  <table class="table" *ngIf="classifications.length">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Draw Classification</th>
+        <th>Classification</th>
+        <th>Metadata</th>
+        <th>Metadata Code</th>
+        <th>Symbol Code</th>
+        <th>Unit Type</th>
+        <th>Undeletable</th>
+        <th>İşlemler</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of classifications">
+        <td>{{ item.id }}</td>
+        <td>{{ item.drawClassification }}</td>
+        <td>{{ item.classification }}</td>
+        <td>{{ item.metaDataName }}</td>
+        <td>{{ item.metaDataCode }}</td>
+        <td>{{ item.symbolCode }}</td>
+        <td>{{ item.unitType }}</td>
+        <td><span class="badge">{{ item.undeletable ? 'Evet' : 'Hayır' }}</span></td>
+        <td>
+          <div class="table-actions">
+            <button type="button" class="secondary" (click)="openEditDialog(item)" [disabled]="isLoading">
+              Güncelle
+            </button>
+            <button type="button" class="danger" (click)="deleteClassification(item)" [disabled]="isLoading">
+              Sil
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <app-empty-state
+    *ngIf="!classifications.length && !isLoading"
+    message="Henüz classification kaydı yok."
+  ></app-empty-state>
+</section>
+
+<div class="modal-backdrop" *ngIf="isEditDialogOpen">
+  <div class="modal">
+    <h3 class="modal-title">Classification Güncelle</h3>
+    <form [formGroup]="editForm" (ngSubmit)="updateClassification()">
+      <div class="form-grid">
+        <label class="form-field">
+          Draw Classification
+          <input type="text" formControlName="drawClassification" />
+        </label>
+        <label class="form-field">
+          Classification
+          <input type="text" formControlName="classification" />
+        </label>
+        <label class="form-field">
+          Metadata
+          <select formControlName="metaDataName">
+            <option value="">Seçiniz</option>
+            <option *ngFor="let item of metadataList" [value]="item.name">{{ item.name }}</option>
+          </select>
+        </label>
+        <label class="form-field">
+          Metadata Code
+          <input type="text" formControlName="metaDataCode" />
+        </label>
+        <label class="form-field">
+          Symbol Code
+          <input type="text" formControlName="symbolCode" />
+        </label>
+        <label class="form-field">
+          Unit Type
+          <input type="text" formControlName="unitType" />
+        </label>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label class="form-field" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" formControlName="undeletable" />
+          Undeletable
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" (click)="closeEditDialog()">Vazgeç</button>
+        <button type="submit" [disabled]="isLoading">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>

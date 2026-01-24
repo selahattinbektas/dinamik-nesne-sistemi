@@ -1,0 +1,43 @@
+<section class="card">
+  <h2 class="section-title">Metadata Yönetimi</h2>
+  <app-metadata-form
+    [formGroup]="form"
+    [searchFormGroup]="searchForm"
+    [entityTypes]="entityTypes"
+    [metadataList]="metadataList"
+    [isLoading]="isLoading"
+    [errorMessage]="errorMessage"
+    (submitForm)="submit()"
+    (deleteMetaData)="deleteMetaData($event)"
+    (editMetaData)="openEditDialog($event)"
+    (searchMetaData)="searchMetaData()"
+    (resetSearch)="resetSearch()"
+    (managePropertyItems)="onManagePropertyItems($event)"
+  ></app-metadata-form>
+</section>
+
+<div class="modal-backdrop" *ngIf="isEditDialogOpen">
+  <div class="modal">
+    <h3 class="modal-title">Metadata Güncelle</h3>
+    <form [formGroup]="editForm" (ngSubmit)="updateMetaData()">
+      <div class="form-grid">
+        <label class="form-field">
+          Metadata Adı
+          <input type="text" formControlName="name" />
+        </label>
+
+        <label class="form-field">
+          Entity Type
+          <select formControlName="entityType">
+            <option *ngFor="let type of entityTypes" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" (click)="closeEditDialog()">Vazgeç</button>
+        <button type="submit">Güncelle</button>
+      </div>
+    </form>
+  </div>
+</div>

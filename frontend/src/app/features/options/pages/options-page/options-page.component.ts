@@ -1,0 +1,161 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { MetadataApiService } from '../../../../core/api/metadata-api.service';
+import { MetaData, Option } from '../../../../core/models/metadata.models';
+
+interface OptionWithUsage {
+  option: Option;
+  usageCount: number;
+}
+
+@Component({
+  selector: 'app-options-page',
+  templateUrl: './options-page.component.html'
+})
+export class OptionsPageComponent implements OnInit {
+  options: OptionWithUsage[] = [];
+  isLoading = false;
+  isSaving = false;
+  isEditDialogOpen = false;
+  errorMessage = '';
+  editingOption: Option | null = null;
+
+  form = this.fb.group({
+    value: ['', Validators.required],
+    label: ['', Validators.required]
+  });
+
+  editForm = this.fb.group({
+    value: [{ value: '', disabled: true }, Validators.required],
+    label: ['', Validators.required]
+  });
+
+  constructor(private readonly fb: FormBuilder, private readonly metadataApi: MetadataApiService) {}
+
+  ngOnInit(): void {
+    this.loadOptions();
+  }
+
+  loadOptions(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    forkJoin({
+      options: this.metadataApi.getAllOptions(),
+      metadata: this.metadataApi.getAllMetaData()
+    }).subscribe({
+      next: ({ options, metadata }) => {
+        this.options = this.mapOptionsWithUsage(options, metadata);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Option listesi alınamadı.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const payload = {
+      value: this.form.value.value ?? '',
+      label: this.form.value.label ?? ''
+    };
+
+    this.isSaving = true;
+    this.errorMessage = '';
+    this.metadataApi.createOption(payload).subscribe({
+      next: () => {
+        this.form.reset({ value: '', label: '' });
+        this.loadOptions();
+        this.isSaving = false;
+      },
+      error: () => {
+        this.errorMessage = 'Option oluşturulamadı.';
+        this.isSaving = false;
+      }
+    });
+  }
+
+  deleteOption(option: Option): void {
+    const confirmed = window.confirm(`'${option.value}' kaydı silinecektir. Emin misiniz?`);
+    if (!confirmed) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.metadataApi.deleteOption(option.value).subscribe({
+      next: () => {
+        this.options = this.options.filter((item) => item.option.value !== option.value);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Option silinemedi.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  openEditDialog(option: Option): void {
+    this.editingOption = option;
+    this.editForm.reset({
+      value: option.value,
+      label: option.label
+    });
+    this.isEditDialogOpen = true;
+  }
+
+  closeEditDialog(): void {
+    this.isEditDialogOpen = false;
+    this.editingOption = null;
+  }
+
+  updateOption(): void {
+    if (!this.editingOption || this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+
+    const payload = {
+      value: this.editForm.value.value ?? this.editingOption.value,
+      label: this.editForm.value.label ?? this.editingOption.label
+    };
+
+    this.isSaving = true;
+    this.errorMessage = '';
+    this.metadataApi.updateOption(this.editingOption.value, payload).subscribe({
+      next: (updated) => {
+        this.options = this.options.map((item) =>
+          item.option.value === this.editingOption?.value ? { ...item, option: updated } : item
+        );
+        this.isSaving = false;
+        this.closeEditDialog();
+      },
+      error: () => {
+        this.errorMessage = 'Option güncellenemedi.';
+        this.isSaving = false;
+      }
+    });
+  }
+
+  private mapOptionsWithUsage(options: Option[], metadata: MetaData[]): OptionWithUsage[] {
+    const usageMap = new Map<string, number>();
+    metadata.forEach((metaData) => {
+      metaData.propertyItemList?.forEach((item) => {
+        item.options?.forEach((option) => {
+          usageMap.set(option.value, (usageMap.get(option.value) ?? 0) + 1);
+        });
+      });
+    });
+
+    return options.map((option) => ({
+      option,
+      usageCount: usageMap.get(option.value) ?? 0
+    }));
+  }
+}
