@@ -20,4 +20,5 @@ Kullanım
 
 <img width="2196" height="1438" alt="image" src="https://github.com/user-attachments/assets/eb21dfed-cba4-4577-8b4e-26fea2e4c8fd" />
 
+<img width="2688" height="1438" alt="image" src="https://github.com/user-attachments/assets/97131a6e-fdaf-42d6-95c2-7ae9da86d317" />
 
