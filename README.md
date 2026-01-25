@@ -11,7 +11,7 @@ IDE : Intellij IDEA
 
 Kullanım
 ----------
-- Proje root klasörüne gidip : docker-compose -up -d
+- Proje root klasörüne gidip : docker-compose up -d
 - MongoDB Compass -> new Connection -> mongodb://localhost:27017/
 - Intellij IDEA'da DynamicObjectSystemApplication sınıfını run ya da debug edelim
 - cd frontend ile frontend projesine geçelim. Sistemde node kurulu değilse kuralım. Ardından npm install -> npm start
