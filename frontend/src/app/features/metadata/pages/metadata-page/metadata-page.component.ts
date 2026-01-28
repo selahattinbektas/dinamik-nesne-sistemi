@@ -27,10 +27,10 @@ export class MetadataPageComponent implements OnInit {
   entityTypeLabelMap = EEntityTypeLabelMap;
   isEditDialogOpen = false;
   editingMetaData: MetaData | null = null;
+  isValidationDialogOpen = false;
+  validationMessages: string[] = [];
 
-  /**
-   * Create form
-   */
+
   form = this.fb.group<MetadataFormControls>({
     name: new FormControl('', {
       nonNullable: true,
@@ -41,9 +41,7 @@ export class MetadataPageComponent implements OnInit {
     })
   });
 
-  /**
-   * Edit form
-   */
+
   editForm = this.fb.group<MetadataFormControls>({
     name: new FormControl('', {
       nonNullable: true,
@@ -54,9 +52,7 @@ export class MetadataPageComponent implements OnInit {
     })
   });
 
-  /**
-   * Search form (typed olmasına gerek yok)
-   */
+
   searchForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]]
   });
@@ -189,9 +185,13 @@ export class MetadataPageComponent implements OnInit {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.validationMessages = this.getCreateValidationMessages();
+      this.isValidationDialogOpen = true;
       return;
     }
 
+    this.isValidationDialogOpen = false;
+    this.validationMessages = [];
     const value = this.form.getRawValue();
 
     const payload = {
@@ -214,4 +214,24 @@ export class MetadataPageComponent implements OnInit {
   onManagePropertyItems(metaData: MetaData): void {
     this.router.navigate(['/metadata/property-items', metaData.name]);
   }
+
+  closeValidationDialog(): void {
+      this.isValidationDialogOpen = false;
+    }
+
+    private getCreateValidationMessages(): string[] {
+      const messages: string[] = [];
+      const nameControl = this.form.controls.name;
+      const entityTypeControl = this.form.controls.entityType;
+
+      if (nameControl.errors?.['required']) {
+        messages.push('Metadata adı zorunludur.');
+      }
+
+      if (entityTypeControl.errors?.['required']) {
+        messages.push('Lütfen bir entity tipi seçiniz.');
+      }
+
+      return messages;
+    }
 }

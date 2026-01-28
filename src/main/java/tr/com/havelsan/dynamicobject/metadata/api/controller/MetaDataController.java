@@ -1,6 +1,8 @@
 package tr.com.havelsan.dynamicobject.metadata.api.controller;
 
 import java.util.List;
+
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +73,7 @@ public class MetaDataController {
                     )
             )
     )
-    public ResponseEntity<MetaDataResponseDTO> createMetaData(@RequestBody MetaDataDTO dto) {
+    public ResponseEntity<MetaDataResponseDTO> createMetaData(@Valid @RequestBody MetaDataDTO dto) {
         return ResponseEntity.ok(metaDataMapper.toMetaDataResponse(metaDataService.createMetaData(dto)));
     }
 

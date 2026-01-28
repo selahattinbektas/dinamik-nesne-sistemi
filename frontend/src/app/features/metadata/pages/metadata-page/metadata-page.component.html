@@ -17,6 +17,18 @@
   ></app-metadata-form>
 </section>
 
+<div class="modal-backdrop" *ngIf="isValidationDialogOpen">
+    <div class="modal">
+        <h3 class="modal-title">Bilgi Mesajı</h3>
+        <ul>
+            <li *ngFor="let message of validationMessages">{{ message }}</li>
+        </ul>
+        <div class="modal-actions">
+            <button type="button" class="secondary" (click)="closeValidationDialog()">Tamam</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-backdrop" *ngIf="isEditDialogOpen">
   <div class="modal">
     <h3 class="modal-title">Metadata Güncelle</h3>
