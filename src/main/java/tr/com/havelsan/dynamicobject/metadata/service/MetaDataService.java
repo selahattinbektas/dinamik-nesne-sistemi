@@ -22,6 +22,8 @@ public interface MetaDataService {
 
     List<MetaData> getAllMetaDatas();
 
+    List<MetaData> searchMetaDataByName(String name);
+
     //property item
     PropertyItem createPropertyItem(String metaDataName, PropertyItemDTO dto);
 

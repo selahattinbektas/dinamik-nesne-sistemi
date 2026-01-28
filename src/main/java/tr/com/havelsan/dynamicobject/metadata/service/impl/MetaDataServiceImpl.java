@@ -81,6 +81,14 @@ public class MetaDataServiceImpl implements MetaDataService {
         return metaDataRepository.findAll();
     }
 
+    @Override
+    public List<MetaData> searchMetaDataByName(String name) {
+        if (name == null || name.isBlank()) {
+            return List.of();
+        }
+        return metaDataRepository.findByNameContainingIgnoreCase(name);
+    }
+
     private MetaData mapMetaData(MetaDataDTO dto) {
         MetaData metaData = new MetaData();
         metaData.setName(dto.getName());

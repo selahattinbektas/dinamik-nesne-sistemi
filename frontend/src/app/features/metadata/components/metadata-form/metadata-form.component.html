@@ -29,10 +29,20 @@
     <label class="form-field">
       Metadata Adı
       <input type="text" formControlName="name" placeholder="En az 2 karakter" />
+        <span
+                *ngIf="
+          searchFormGroup.get('name')?.touched &&
+          (searchFormGroup.get('name')?.errors?.['required'] ||
+            searchFormGroup.get('name')?.errors?.['minlength'])
+        "
+                style="margin-top: 4px; color: #f59e0b; font-size: 12px;"
+        >
+        En az iki karakter girilmelidir
+      </span>
     </label>
   </div>
   <div style="margin-top: 12px; display: flex; gap: 12px;">
-    <button type="submit" [disabled]="searchFormGroup.invalid">Ara</button>
+    <button type="submit">Ara</button>
     <button type="button" class="secondary" (click)="resetSearch.emit()">Sıfırla</button>
   </div>
 </form>

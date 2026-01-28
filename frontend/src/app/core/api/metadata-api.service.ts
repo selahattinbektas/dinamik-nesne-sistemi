@@ -41,6 +41,10 @@ export class MetadataApiService {
     return this.http.get<MetaData[]>(this.baseUrl);
   }
 
+  searchMetaData(name: string): Observable<MetaData[]> {
+      return this.http.get<MetaData[]>(`${this.baseUrl}/search`, { params: { name } });
+    }
+
   createPropertyItem(metaDataName: string, payload: PropertyItemDTO): Observable<PropertyItem> {
     return this.http.post<PropertyItem>(`${this.baseUrl}/property-items/${metaDataName}`, payload);
   }

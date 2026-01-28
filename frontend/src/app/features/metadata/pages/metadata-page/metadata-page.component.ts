@@ -114,9 +114,9 @@ export class MetadataPageComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.metadataApi.getMetaData(name).subscribe({
+    this.metadataApi.searchMetaData(name).subscribe({
       next: (data) => {
-        this.metadataList = [data];
+        this.metadataList = data;
         this.isLoading = false;
       },
       error: () => {
