@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MetadataApiService } from '../../../../core/api/metadata-api.service';
 import { EComponentType, EPropertyItemType } from '../../../../core/models/enums';
+import { EComponentTypeLabelMap } from '../../../../core/models/enums.labels';
 import { MetaData, Option, PropertyItem } from '../../../../core/models/metadata.models';
 
 @Component({
@@ -18,6 +19,7 @@ export class PropertyItemsPageComponent implements OnInit {
   isEditDialogOpen = false;
   errorMessage = '';
   componentTypes = Object.values(EComponentType);
+  componentTypeLabels = EComponentTypeLabelMap;
   propertyItemTypes = Object.values(EPropertyItemType);
   editingItem: PropertyItem | null = null;
   options: Option[] = [];
@@ -25,7 +27,7 @@ export class PropertyItemsPageComponent implements OnInit {
   form = this.fb.group({
     itemName: ['', Validators.required],
     title: ['', Validators.required],
-    type: [EComponentType.TEXT, Validators.required],
+    type: [EComponentType.TextInputComponent, Validators.required],
     unit: [''],
     min: [null as number | null],
     max: [null as number | null],
@@ -43,7 +45,7 @@ export class PropertyItemsPageComponent implements OnInit {
   editForm = this.fb.group({
     itemName: ['', Validators.required],
     title: ['', Validators.required],
-    type: [EComponentType.TEXT, Validators.required],
+    type: [EComponentType.TextInputComponent, Validators.required],
     unit: [''],
     min: [null as number | null],
     max: [null as number | null],
@@ -121,7 +123,7 @@ export class PropertyItemsPageComponent implements OnInit {
       return;
     }
 
-    const selectedType = this.form.value.type ?? EComponentType.TEXT;
+    const selectedType = this.form.value.type ?? EComponentType.TextInputComponent;
     const payload = {
       itemName: this.form.value.itemName ?? '',
       title: this.form.value.title ?? '',
@@ -137,7 +139,7 @@ export class PropertyItemsPageComponent implements OnInit {
       showContextMenu: this.form.value.showContextMenu ?? false,
       propertyItemType: this.form.value.propertyItemType ?? EPropertyItemType.BASE,
       selectedVisible: this.form.value.selectedVisible ?? true,
-      options: selectedType === EComponentType.SELECT ? (this.form.value.options ?? []) : []
+      options: this.isOptionBasedType(selectedType) ? (this.form.value.options ?? []) : []
     };
 
     this.isSaving = true;
@@ -149,7 +151,7 @@ export class PropertyItemsPageComponent implements OnInit {
         this.form.reset({
           itemName: '',
           title: '',
-          type: EComponentType.TEXT,
+          type: EComponentType.TextInputComponent,
           unit: '',
           min: null,
           max: null,
@@ -196,7 +198,7 @@ export class PropertyItemsPageComponent implements OnInit {
     this.editForm.reset({
       itemName: item.itemName,
       title: item.title,
-      type: item.type ?? EComponentType.TEXT,
+      type: item.type ?? EComponentType.TextInputComponent,
       unit: item.unit ?? '',
       min: item.min ?? null,
       max: item.max ?? null,
@@ -240,7 +242,7 @@ export class PropertyItemsPageComponent implements OnInit {
       showContextMenu: this.editForm.value.showContextMenu ?? false,
       propertyItemType: this.editForm.value.propertyItemType ?? this.editingItem.propertyItemType,
       selectedVisible: this.editForm.value.selectedVisible ?? true,
-      options: selectedType === EComponentType.SELECT ? (this.editForm.value.options ?? []) : []
+      options: this.isOptionBasedType(selectedType) ? (this.editForm.value.options ?? []) : []
     };
 
     this.isSaving = true;
@@ -268,4 +270,19 @@ export class PropertyItemsPageComponent implements OnInit {
       .map((selectedOption) => this.options.find((option) => option.value === selectedOption.value))
       .filter((option): option is Option => Boolean(option));
   }
+
+  private isOptionBasedType(type: EComponentType): boolean {
+      return [
+        EComponentType.SelectComponent,
+        EComponentType.RadioGroupComponent,
+        EComponentType.SegmentedSelectionComponent
+      ].includes(type);
+    }
+
+    isOptionType(type: EComponentType | null | undefined): boolean {
+        if (!type) {
+          return false;
+        }
+        return this.isOptionBasedType(type);
+      }
 }

@@ -192,11 +192,11 @@ export class EntityPropertiesPageComponent implements OnInit {
     items.forEach((item) => {
       const key = this.getPropertyKey(item);
       let initialValue: unknown = '';
-      if (item.type === EComponentType.CHECKBOX) {
+      if (this.isBooleanType(item.type)) {
         initialValue = false;
-      } else if (item.type === EComponentType.NUMBER) {
+      } else if (this.isNumericType(item.type)) {
         initialValue = null;
-      } else if (item.type === EComponentType.SELECT || item.type === EComponentType.RADIO) {
+      } else if (this.isOptionBasedType(item.type)) {
         initialValue = '';
       }
       group[key] = this.fb.control(initialValue);
@@ -205,17 +205,17 @@ export class EntityPropertiesPageComponent implements OnInit {
   }
 
   private normalizeValue(item: PropertyItem, value: unknown): unknown {
-    if (item.type === EComponentType.NUMBER) {
+    if (this.isNumericType(item.type)) {
       return value === null || value === '' ? null : Number(value);
     }
-    if (item.type === EComponentType.CHECKBOX) {
+    if (this.isBooleanType(item.type)) {
       return Boolean(value);
     }
     return value ?? '';
   }
 
   private isEmptyValue(item: PropertyItem, value: unknown): boolean {
-    if (item.type === EComponentType.CHECKBOX) {
+    if (this.isBooleanType(item.type)) {
       return value !== true;
     }
     return value === null || value === undefined || value === '';
@@ -228,5 +228,24 @@ export class EntityPropertiesPageComponent implements OnInit {
   private hasProperty(properties: Record<string, unknown>, item: PropertyItem): boolean {
     const key = this.getPropertyKey(item);
     return Object.prototype.hasOwnProperty.call(properties, key);
+  }
+private isOptionBasedType(type: EComponentType): boolean {
+    return [
+      EComponentType.SelectComponent,
+      EComponentType.RadioGroupComponent,
+      EComponentType.SegmentedSelectionComponent
+    ].includes(type);
+  }
+
+  private isNumericType(type: EComponentType): boolean {
+    return [
+      EComponentType.IntegerInputComponent,
+      EComponentType.FloatInputComponent,
+      EComponentType.SliderComponent
+    ].includes(type);
+  }
+
+  private isBooleanType(type: EComponentType): boolean {
+    return [EComponentType.ToggleComponent, EComponentType.SwitchComponent].includes(type);
   }
 }

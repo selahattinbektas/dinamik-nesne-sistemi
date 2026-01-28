@@ -28,11 +28,13 @@
     <label class="form-field">
       Component Type
       <select formControlName="type">
-        <option *ngFor="let type of componentTypes" [value]="type">{{ type }}</option>
+          <option *ngFor="let type of componentTypes" [value]="type">
+              {{ componentTypeLabels[type] }}
+          </option>
       </select>
     </label>
 
-    <label class="form-field" *ngIf="form.get('type')?.value === 'SELECT'">
+      <label class="form-field" *ngIf="isOptionType(form.get('type')?.value)">
       Options
       <select formControlName="options" multiple>
         <option *ngFor="let option of options" [ngValue]="option">
@@ -172,11 +174,13 @@
         <label class="form-field">
           Component Type
           <select formControlName="type">
-            <option *ngFor="let type of componentTypes" [value]="type">{{ type }}</option>
+              <option *ngFor="let type of componentTypes" [value]="type">
+                  {{ componentTypeLabels[type] }}
+              </option>
           </select>
         </label>
 
-        <label class="form-field" *ngIf="editForm.get('type')?.value === 'SELECT'">
+          <label class="form-field" *ngIf="isOptionType(editForm.get('type')?.value)">
           Options
           <select formControlName="options" multiple>
             <option *ngFor="let option of options" [ngValue]="option">

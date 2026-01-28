@@ -175,11 +175,11 @@ export class EntitiesPageComponent implements OnInit {
     const group: Record<string, unknown> = {};
     items.forEach((item) => {
       let initialValue: unknown = '';
-      if (item.type === EComponentType.CHECKBOX) {
+      if (this.isBooleanType(item.type)) {
         initialValue = false;
-      } else if (item.type === EComponentType.NUMBER) {
+      } else if (this.isNumericType(item.type)) {
         initialValue = null;
-      } else if (item.type === EComponentType.SELECT || item.type === EComponentType.RADIO) {
+     } else if (this.isOptionBasedType(item.type)) {
         initialValue = item.options?.[0]?.value ?? '';
       }
       group[item.itemName] = this.fb.control(initialValue);
@@ -193,9 +193,9 @@ export class EntitiesPageComponent implements OnInit {
     const payload: Record<string, unknown> = {};
     this.propertyItems.forEach((item) => {
       const value = raw[item.itemName];
-      if (item.type === EComponentType.NUMBER) {
+      if (this.isNumericType(item.type)) {
         payload[item.itemName] = value === null || value === '' ? null : Number(value);
-      } else if (item.type === EComponentType.CHECKBOX) {
+      } else if (this.isBooleanType(item.type)) {
         payload[item.itemName] = Boolean(value);
       } else {
         payload[item.itemName] = value ?? '';
@@ -230,4 +230,24 @@ export class EntitiesPageComponent implements OnInit {
       properties: Array<{ name: string; value: unknown }>;
     }>;
   }
+
+  private isOptionBasedType(type: EComponentType): boolean {
+      return [
+        EComponentType.SelectComponent,
+        EComponentType.RadioGroupComponent,
+        EComponentType.SegmentedSelectionComponent
+      ].includes(type);
+    }
+
+    private isNumericType(type: EComponentType): boolean {
+      return [
+        EComponentType.IntegerInputComponent,
+        EComponentType.FloatInputComponent,
+        EComponentType.SliderComponent
+      ].includes(type);
+    }
+
+    private isBooleanType(type: EComponentType): boolean {
+      return [EComponentType.ToggleComponent, EComponentType.SwitchComponent].includes(type);
+    }
 }
