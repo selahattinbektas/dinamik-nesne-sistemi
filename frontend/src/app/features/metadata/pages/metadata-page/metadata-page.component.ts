@@ -1,9 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  Validators
+} from '@angular/forms';
 import { MetadataApiService } from '../../../../core/api/metadata-api.service';
 import { EEntityType } from '../../../../core/models/enums';
 import { MetaData } from '../../../../core/models/metadata.models';
+import { EEntityTypeLabelMap } from '../../../../core/models/enums.labels';
+
+type MetadataFormControls = {
+  name: FormControl<string>;
+  entityType: FormControl<EEntityType | null>;
+};
 
 @Component({
   selector: 'app-metadata-page',
@@ -14,21 +24,41 @@ export class MetadataPageComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   entityTypes = Object.values(EEntityType);
+  entityTypeLabelMap = EEntityTypeLabelMap;
   isEditDialogOpen = false;
   editingMetaData: MetaData | null = null;
 
-  form = this.fb.group({
-    name: ['', Validators.required],
-    entityType: [EEntityType.CUSTOM, Validators.required]
+  /**
+   * Create form
+   */
+  form = this.fb.group<MetadataFormControls>({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required]
+    }),
+    entityType: new FormControl<EEntityType | null>(null, {
+      validators: [Validators.required]
+    })
   });
 
+  /**
+   * Edit form
+   */
+  editForm = this.fb.group<MetadataFormControls>({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required]
+    }),
+    entityType: new FormControl<EEntityType | null>(null, {
+      validators: [Validators.required]
+    })
+  });
+
+  /**
+   * Search form (typed olmasına gerek yok)
+   */
   searchForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]]
-  });
-
-  editForm = this.fb.group({
-    name: ['', Validators.required],
-    entityType: [EEntityType.CUSTOM, Validators.required]
   });
 
   constructor(
@@ -44,6 +74,7 @@ export class MetadataPageComponent implements OnInit {
   loadMetadata(): void {
     this.isLoading = true;
     this.errorMessage = '';
+
     this.metadataApi.getAllMetaData().subscribe({
       next: (data) => {
         this.metadataList = data;
@@ -64,6 +95,7 @@ export class MetadataPageComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
+
     this.metadataApi.deleteMetaData(name).subscribe({
       next: () => {
         this.metadataList = this.metadataList.filter((item) => item.name !== name);
@@ -85,6 +117,7 @@ export class MetadataPageComponent implements OnInit {
     const name = this.searchForm.value.name ?? '';
     this.isLoading = true;
     this.errorMessage = '';
+
     this.metadataApi.getMetaData(name).subscribe({
       next: (data) => {
         this.metadataList = [data];
@@ -106,7 +139,7 @@ export class MetadataPageComponent implements OnInit {
     this.editingMetaData = metaData;
     this.editForm.reset({
       name: metaData.name,
-      entityType: metaData.entityType ?? EEntityType.CUSTOM
+      entityType: metaData.entityType ?? null
     });
     this.isEditDialogOpen = true;
   }
@@ -126,24 +159,23 @@ export class MetadataPageComponent implements OnInit {
       return;
     }
 
+    const value = this.editForm.getRawValue();
+    const originalName = this.editingMetaData.name;
+
     const payload = {
-      name: this.editForm.value.name ?? this.editingMetaData.name,
-      entityType: this.editForm.value.entityType ?? this.editingMetaData.entityType,
+      name: value.name,
+      entityType: value.entityType!, // required olduğu için garanti
       propertyItemList: this.editingMetaData.propertyItemList ?? []
     };
 
     this.isLoading = true;
     this.errorMessage = '';
-    const originalName = this.editingMetaData.name;
+
     this.metadataApi.updateMetaData(originalName, payload).subscribe({
       next: (updated) => {
-        const updatedList = this.metadataList.map((item) =>
+        this.metadataList = this.metadataList.map((item) =>
           item.name === originalName ? updated : item
         );
-        if (!updatedList.some((item) => item.name === updated.name)) {
-          updatedList.push(updated);
-        }
-        this.metadataList = updatedList;
         this.isLoading = false;
         this.closeEditDialog();
       },
@@ -160,15 +192,17 @@ export class MetadataPageComponent implements OnInit {
       return;
     }
 
+    const value = this.form.getRawValue();
+
     const payload = {
-      name: this.form.value.name ?? '',
-      entityType: this.form.value.entityType ?? EEntityType.CUSTOM,
+      name: value.name,
+      entityType: value.entityType!, // required olduğu için garanti
       propertyItemList: []
     };
 
     this.metadataApi.createMetaData(payload).subscribe({
       next: () => {
-        this.form.reset({ name: '', entityType: EEntityType.CUSTOM });
+        this.form.reset({ name: '', entityType: null });
         this.loadMetadata();
       },
       error: () => {

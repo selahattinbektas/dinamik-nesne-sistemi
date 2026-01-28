@@ -4,6 +4,7 @@
     [formGroup]="form"
     [searchFormGroup]="searchForm"
     [entityTypes]="entityTypes"
+    [entityTypeLabelMap]="entityTypeLabelMap"
     [metadataList]="metadataList"
     [isLoading]="isLoading"
     [errorMessage]="errorMessage"
@@ -19,25 +20,33 @@
 <div class="modal-backdrop" *ngIf="isEditDialogOpen">
   <div class="modal">
     <h3 class="modal-title">Metadata Güncelle</h3>
-    <form [formGroup]="editForm" (ngSubmit)="updateMetaData()">
-      <div class="form-grid">
-        <label class="form-field">
-          Metadata Adı
-          <input type="text" formControlName="name" />
-        </label>
+      <form [formGroup]="editForm" (ngSubmit)="updateMetaData()">
+          <div class="form-grid">
+              <label class="form-field">
+                  Metadata Adı
+                  <input type="text" formControlName="name" />
+              </label>
 
-        <label class="form-field">
-          Entity Type
-          <select formControlName="entityType">
-            <option *ngFor="let type of entityTypes" [value]="type">{{ type }}</option>
-          </select>
-        </label>
-      </div>
+              <label class="form-field">
+                  Entity Type
+                  <select formControlName="entityType">
+                      <option [ngValue]="null" disabled>Seçiniz</option>
+                      <option *ngFor="let type of entityTypes" [ngValue]="type">
+                          {{ type }}
+                      </option>
+                  </select>
+                  <div *ngIf="editForm.controls.entityType.touched && editForm.controls.entityType.invalid">
+                      <small class="error">Lütfen bir entity tipi seçiniz</small>
+                  </div>
+              </label>
 
-      <div class="modal-actions">
-        <button type="button" class="secondary" (click)="closeEditDialog()">Vazgeç</button>
-        <button type="submit">Güncelle</button>
-      </div>
-    </form>
+
+          </div>
+
+          <div class="modal-actions">
+              <button type="button" class="secondary" (click)="closeEditDialog()">Vazgeç</button>
+              <button type="submit">Güncelle</button>
+          </div>
+      </form>
   </div>
 </div>

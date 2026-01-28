@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MetaData } from '../../../../core/models/metadata.models';
+import { EEntityType } from '../../../../core/models/enums';
+
 
 @Component({
   selector: 'app-metadata-form',
@@ -9,7 +11,8 @@ import { MetaData } from '../../../../core/models/metadata.models';
 export class MetadataFormComponent {
   @Input({ required: true }) formGroup!: FormGroup;
   @Input({ required: true }) searchFormGroup!: FormGroup;
-  @Input({ required: true }) entityTypes: string[] = [];
+  @Input({ required: true }) entityTypes: EEntityType[] = [];
+  @Input({ required: true }) entityTypeLabelMap!: Record<EEntityType, string>;
   @Input({ required: true }) metadataList: MetaData[] = [];
   @Input() isLoading = false;
   @Input() errorMessage = '';

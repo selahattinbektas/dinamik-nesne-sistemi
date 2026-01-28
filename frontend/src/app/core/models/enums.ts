@@ -1,8 +1,6 @@
 export enum EEntityType {
-  USER = 'USER',
-  PRODUCT = 'PRODUCT',
-  PROJECT = 'PROJECT',
-  CUSTOM = 'CUSTOM'
+  CGF = 'CGF',
+  OWNSHIP = 'OWNSHIP'
 }
 
 export enum EComponentType {

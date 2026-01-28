@@ -5,12 +5,19 @@
       <input type="text" formControlName="name" placeholder="IHA" />
     </label>
 
-    <label class="form-field">
-      Entity Type
-      <select formControlName="entityType">
-        <option *ngFor="let type of entityTypes" [value]="type">{{ type }}</option>
-      </select>
-    </label>
+      <label class="form-field">
+          Entity Type
+          <select formControlName="entityType">
+              <option [ngValue]="null" disabled>Seçiniz</option>
+              <option *ngFor="let type of entityTypes" [ngValue]="type">
+                  {{ entityTypeLabelMap[type] }}
+              </option>
+          </select>
+          <div *ngIf="formGroup.controls.entityType.touched && formGroup.controls.entityType.invalid">
+              <small class="error">Lütfen bir entity tipi seçiniz</small>
+          </div>
+      </label>
+
   </div>
 
   <div style="margin-top: 16px; display: flex; gap: 12px;">

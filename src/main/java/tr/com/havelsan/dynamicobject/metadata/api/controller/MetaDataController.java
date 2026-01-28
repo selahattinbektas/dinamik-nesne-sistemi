@@ -47,7 +47,7 @@ public class MetaDataController {
                             value = """
                                     {
                                       "name": "IHA",
-                                      "entityType": "CUSTOM",
+                                      "entityType": "CGF",
                                       "propertyItemList": [
                                         {
                                           "type": "TEXT",
