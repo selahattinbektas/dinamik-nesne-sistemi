@@ -55,7 +55,7 @@ class UiContentServiceImplTest {
 
     @Test
     void createUiContent_whenNameDoesNotExist_mapsAndSaves() {
-        UiContentDTO dto = buildDto("content", "card", EUiContentType.SUMMARY, List.of(10, 20));
+        UiContentDTO dto = buildDto("content", "card", EUiContentType.CONTROL_DRIVING, List.of(10, 20));
         when(uiContentRepository.existsById("content")).thenReturn(false);
         when(uiContentRepository.save(any(UiContent.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -69,7 +69,7 @@ class UiContentServiceImplTest {
         assertEquals(dto.getItemIdList(), captured.getItemIdList());
         assertEquals("content", saved.getName());
         assertEquals("card", saved.getCssClassName());
-        assertEquals(EUiContentType.SUMMARY, saved.getType());
+        assertEquals(EUiContentType.CONTROL_DRIVING, saved.getType());
         assertEquals(List.of(10, 20), saved.getItemIdList());
     }
 
@@ -114,7 +114,7 @@ class UiContentServiceImplTest {
     @Test
     void updateUiContent_whenDtoHasValues_updatesFieldsAndItemList() {
         UiContent existing = buildContent("content", "original", EUiContentType.DEFAULT, List.of(1, 2));
-        UiContentDTO dto = buildDto(null, "updated", EUiContentType.DETAIL, List.of(7, 8, 9));
+        UiContentDTO dto = buildDto(null, "updated", EUiContentType.AREA_RULE_PROPERTIES, List.of(7, 8, 9));
         when(uiContentRepository.findById("content")).thenReturn(Optional.of(existing));
         when(uiContentRepository.save(existing)).thenReturn(existing);
 
@@ -122,14 +122,14 @@ class UiContentServiceImplTest {
 
         assertSame(existing, result);
         assertEquals("updated", existing.getCssClassName());
-        assertEquals(EUiContentType.DETAIL, existing.getType());
+        assertEquals(EUiContentType.AREA_RULE_PROPERTIES, existing.getType());
         assertEquals(List.of(7, 8, 9), existing.getItemIdList());
         verify(uiContentRepository).save(existing);
     }
 
     @Test
     void updateUiContent_whenMissing_throwsNotFound() {
-        UiContentDTO dto = buildDto(null, "updated", EUiContentType.DETAIL, List.of(7));
+        UiContentDTO dto = buildDto(null, "updated", EUiContentType.AREA_RULE_PROPERTIES, List.of(7));
         when(uiContentRepository.findById("missing")).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
@@ -166,7 +166,7 @@ class UiContentServiceImplTest {
     void getAllUiContents_returnsRepositoryResults() {
         List<UiContent> contents = List.of(
                 buildContent("one", "c1", EUiContentType.DEFAULT, List.of(1)),
-                buildContent("two", "c2", EUiContentType.SUMMARY, List.of(2, 3)));
+                buildContent("two", "c2", EUiContentType.GROUP, List.of(2, 3)));
         when(uiContentRepository.findAll()).thenReturn(contents);
 
         List<UiContent> result = uiContentService.getAllUiContents();

@@ -56,7 +56,7 @@ public class MetaDataController {
                                           "groupProperty": false,
                                           "readOnly": false,
                                           "showContextMenu": true,
-                                          "propertyItemType": "BASE",
+                                          "propertyItemType": "DEFAULT",
                                           "selectedVisible": true,
                                           "options": []
                                         }
@@ -119,7 +119,7 @@ public class MetaDataController {
                                       "groupProperty": false,
                                       "readOnly": false,
                                       "showContextMenu": true,
-                                      "propertyItemType": "BASE",
+                                      "propertyItemType": "DEFAULT",
                                       "selectedVisible": true,
                                       "options": []
                                     }
