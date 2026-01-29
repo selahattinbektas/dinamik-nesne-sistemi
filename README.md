@@ -196,4 +196,11 @@ ADIMLAR
         "propertyItemType": "LEADER_ONLY"
       }
     ]
+
   }
+
+
+3) MetaData Eklemeleri Yapılır
+   
+   <img width="2246" height="1290" alt="image" src="https://github.com/user-attachments/assets/76a1c005-e97a-4748-82a6-368554491fbc" />
+
