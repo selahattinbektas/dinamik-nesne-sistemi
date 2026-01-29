@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MetadataApiService } from '../../../../core/api/metadata-api.service';
 import { EComponentType, EPropertyItemType } from '../../../../core/models/enums';
@@ -8,7 +8,8 @@ import { MetaData, Option, PropertyItem } from '../../../../core/models/metadata
 
 @Component({
   selector: 'app-property-items-page',
-  templateUrl: './property-items-page.component.html'
+  templateUrl: './property-items-page.component.html',
+  styleUrls: ['./property-items-page.component.css']
 })
 export class PropertyItemsPageComponent implements OnInit {
   metaDataName = '';
@@ -23,6 +24,8 @@ export class PropertyItemsPageComponent implements OnInit {
   propertyItemTypes = Object.values(EPropertyItemType);
   editingItem: PropertyItem | null = null;
   options: Option[] = [];
+  optionsSearch = '';
+  editOptionsSearch = '';
 
   form = this.fb.group({
     itemName: ['', Validators.required],
@@ -165,6 +168,7 @@ export class PropertyItemsPageComponent implements OnInit {
           fromValidatorClass: '',
           options: []
         });
+        this.optionsSearch = '';
       },
       error: () => {
         this.errorMessage = 'Property item kaydedilemedi.';
@@ -212,6 +216,7 @@ export class PropertyItemsPageComponent implements OnInit {
       fromValidatorClass: item.fromValidatorClass ?? '',
       options: this.mapSelectedOptions(item.options ?? [])
     });
+    this.editOptionsSearch = '';
     this.isEditDialogOpen = true;
   }
 
@@ -253,6 +258,7 @@ export class PropertyItemsPageComponent implements OnInit {
           existing.id === updated.id ? updated : existing
         );
         this.isSaving = false;
+        this.editOptionsSearch = '';
         this.closeEditDialog();
       },
       error: () => {
@@ -285,4 +291,31 @@ export class PropertyItemsPageComponent implements OnInit {
         }
         return this.isOptionBasedType(type);
       }
+
+      getFilteredOptions(searchTerm: string): Option[] {
+          const normalized = searchTerm.trim().toLowerCase();
+          if (!normalized) {
+            return this.options;
+          }
+          return this.options.filter((option) => {
+            const label = option.label?.toLowerCase() ?? '';
+            const value = option.value?.toLowerCase() ?? '';
+            return label.includes(normalized) || value.includes(normalized);
+          });
+        }
+
+        isOptionSelected(formGroup: FormGroup, option: Option): boolean {
+          const selected = (formGroup.value.options ?? []) as Option[];
+          return selected.some((selectedOption) => selectedOption.value === option.value);
+        }
+
+        toggleOptionSelection(formGroup: FormGroup, option: Option): void {
+          const selected = (formGroup.value.options ?? []) as Option[];
+          const isSelected = selected.some((selectedOption) => selectedOption.value === option.value);
+          const nextSelection = isSelected
+            ? selected.filter((selectedOption) => selectedOption.value !== option.value)
+            : [...selected, option];
+          formGroup.get('options')?.setValue(nextSelection);
+          formGroup.get('options')?.markAsDirty();
+        }
 }

@@ -36,11 +36,24 @@
 
       <label class="form-field" *ngIf="isOptionType(form.get('type')?.value)">
       Options
-      <select formControlName="options" multiple>
-        <option *ngFor="let option of options" [ngValue]="option">
-          {{ option.label }}
-        </option>
-      </select>
+          <input
+                  type="text"
+                  class="multi-select-search"
+                  [value]="optionsSearch"
+                  (input)="optionsSearch = $any($event.target).value"
+                  placeholder="Ara..."
+          />
+          <div class="multi-select-list" *ngIf="getFilteredOptions(optionsSearch) as filteredOptions">
+              <label class="multi-select-option" *ngFor="let option of filteredOptions">
+                  <input
+                          type="checkbox"
+                          [checked]="isOptionSelected(form, option)"
+                          (change)="toggleOptionSelection(form, option)"
+                  />
+                  <span>{{ option.label }}</span>
+              </label>
+              <div class="multi-select-empty" *ngIf="!filteredOptions.length">Sonuç bulunamadı.</div>
+          </div>
     </label>
 
     <label class="form-field">
@@ -182,11 +195,24 @@
 
           <label class="form-field" *ngIf="isOptionType(editForm.get('type')?.value)">
           Options
-          <select formControlName="options" multiple>
-            <option *ngFor="let option of options" [ngValue]="option">
-              {{ option.label }}
-            </option>
-          </select>
+              <input
+                      type="text"
+                      class="multi-select-search"
+                      [value]="editOptionsSearch"
+                      (input)="editOptionsSearch = $any($event.target).value"
+                      placeholder="Ara..."
+              />
+              <div class="multi-select-list" *ngIf="getFilteredOptions(editOptionsSearch) as filteredOptions">
+                  <label class="multi-select-option" *ngFor="let option of filteredOptions">
+                      <input
+                              type="checkbox"
+                              [checked]="isOptionSelected(editForm, option)"
+                              (change)="toggleOptionSelection(editForm, option)"
+                      />
+                      <span>{{ option.label }}</span>
+                  </label>
+                  <div class="multi-select-empty" *ngIf="!filteredOptions.length">Sonuç bulunamadı.</div>
+              </div>
         </label>
         <label class="form-field">
           Property Item Type
