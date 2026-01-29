@@ -17,6 +17,7 @@ import tr.com.havelsan.dynamicobject.metadata.api.dto.OptionResponseDTO;
 import tr.com.havelsan.dynamicobject.metadata.api.dto.PropertyItemDTO;
 import tr.com.havelsan.dynamicobject.metadata.api.dto.PropertyItemResponseDTO;
 import tr.com.havelsan.dynamicobject.metadata.api.mapper.MetaDataMapper;
+import tr.com.havelsan.dynamicobject.metadata.domain.Option;
 import tr.com.havelsan.dynamicobject.metadata.service.MetaDataService;
 
 @RestController
