@@ -36,8 +36,8 @@ export enum EPropertyItemType {
 }
 
 export enum EOptionsPropertyItemType {
-  TeamType = 'teamType',
-  OperationCondition = 'operationCondition',
-  ActiveStatus = 'activeStatus',
-  FreezeStatus = 'freezeStatus'
+  TEAM_TYPE = 'teamType',
+  OPERATION_CONDITION = 'operationCondition',
+  ACTIVE_STATUS = 'activeStatus',
+  FREEZE_STATUS = 'freezeStatus'
 }

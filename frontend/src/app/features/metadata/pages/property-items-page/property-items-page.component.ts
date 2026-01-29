@@ -147,7 +147,9 @@ export class PropertyItemsPageComponent implements OnInit {
       showContextMenu: this.form.value.showContextMenu ?? false,
       propertyItemType: this.form.value.propertyItemType ?? EPropertyItemType.DEFAULT,
       selectedVisible: this.form.value.selectedVisible ?? true,
-      options: this.isOptionBasedType(selectedType) ? resolvedOptions : []
+      options: this.isOptionsComponent(selectedType)
+              ? this.mapOptionsForPayload(resolvedOptions)
+              : []
     };
 
     this.isSaving = true;
@@ -253,7 +255,9 @@ export class PropertyItemsPageComponent implements OnInit {
       showContextMenu: this.editForm.value.showContextMenu ?? false,
       propertyItemType: this.editForm.value.propertyItemType ?? this.editingItem.propertyItemType,
       selectedVisible: this.editForm.value.selectedVisible ?? true,
-      options: this.isOptionBasedType(selectedType) ? resolvedOptions : []
+      options: this.isOptionsComponent(selectedType)
+              ? this.mapOptionsForPayload(resolvedOptions)
+              : []
     };
 
     this.isSaving = true;
@@ -324,8 +328,14 @@ export class PropertyItemsPageComponent implements OnInit {
           if (!optionType) {
             return [];
           }
-          console.log(this.options);
-          return this.options.filter((option) => option.optionsPropertyItemType === optionType);
+
+            return this.options.filter(option => {
+                const optionTypeFromBackend =
+                  EOptionsPropertyItemType[
+                    option.optionsPropertyItemType as unknown as keyof typeof EOptionsPropertyItemType
+                  ];
+                return optionTypeFromBackend === optionType;
+              });
         }
 
         getFilteredOptions(formGroup: FormGroup, searchTerm: string): Option[] {
@@ -382,7 +392,7 @@ export class PropertyItemsPageComponent implements OnInit {
 
           private trimInvalidSelections(formGroup: FormGroup): void {
             const allowedOptions = this.getOptionsForForm(formGroup);
-            console.log(allowedOptions);
+
             const selected = (formGroup.value.options ?? []) as Option[];
             if (!selected.length) {
               return;
@@ -412,18 +422,19 @@ export class PropertyItemsPageComponent implements OnInit {
 
           private mapItemNameToOptionsType(itemName: string): EOptionsPropertyItemType | null {
             switch (itemName) {
-              case EOptionsPropertyItemType.TeamType:
-                return EOptionsPropertyItemType.TeamType;
-              case EOptionsPropertyItemType.OperationCondition:
-                return EOptionsPropertyItemType.OperationCondition;
-              case EOptionsPropertyItemType.ActiveStatus:
-                return EOptionsPropertyItemType.ActiveStatus;
-              case EOptionsPropertyItemType.FreezeStatus:
-                return EOptionsPropertyItemType.FreezeStatus;
+              case EOptionsPropertyItemType.TEAM_TYPE:
+                return EOptionsPropertyItemType['TEAM_TYPE'];
+              case EOptionsPropertyItemType.OPERATION_CONDITION:
+                return EOptionsPropertyItemType.OPERATION_CONDITION;
+              case EOptionsPropertyItemType.ACTIVE_STATUS:
+                return EOptionsPropertyItemType.ACTIVE_STATUS;
+              case EOptionsPropertyItemType.FREEZE_STATUS:
+                return EOptionsPropertyItemType.FREEZE_STATUS;
               default:
                 return null;
             }
           }
+
 
           private isOptionsComponent(type: EComponentType): boolean {
             return (
@@ -432,4 +443,34 @@ export class PropertyItemsPageComponent implements OnInit {
               type === EComponentType.SwitchComponent
             );
           }
+
+          private mapOptionsForPayload(options: Option[]): Option[] {
+              return options.map((option) => ({
+                ...option,
+                optionsPropertyItemType: this.normalizeOptionsPropertyItemType(option.optionsPropertyItemType)
+              }));
+            }
+
+            private normalizeOptionsPropertyItemType(
+              value: EOptionsPropertyItemType | string | null | undefined
+            ): EOptionsPropertyItemType | undefined {
+              if (!value) {
+                return undefined;
+              }
+              if (Object.values(EOptionsPropertyItemType).includes(value as EOptionsPropertyItemType)) {
+                return value as EOptionsPropertyItemType;
+              }
+              switch (value) {
+                case 'TEAM_TYPE':
+                  return EOptionsPropertyItemType.TEAM_TYPE;
+                case 'OPERATION_CONDITION':
+                  return EOptionsPropertyItemType.OPERATION_CONDITION;
+                case 'ACTIVE_STATUS':
+                  return EOptionsPropertyItemType.ACTIVE_STATUS;
+                case 'FREEZE_STATUS':
+                  return EOptionsPropertyItemType.FREEZE_STATUS;
+                default:
+                  return undefined;
+              }
+            }
 }

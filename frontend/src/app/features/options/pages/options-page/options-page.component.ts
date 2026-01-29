@@ -35,10 +35,10 @@ export class OptionsPageComponent implements OnInit {
   });
 
   optionsPropertyItemTypes = [
-      { value: EOptionsPropertyItemType.TeamType, label: 'teamType' },
-      { value: EOptionsPropertyItemType.OperationCondition, label: 'operationCondition' },
-      { value: EOptionsPropertyItemType.ActiveStatus, label: 'activeStatus' },
-      { value: EOptionsPropertyItemType.FreezeStatus, label: 'freezeStatus' }
+      { value: EOptionsPropertyItemType.TEAM_TYPE, label: 'teamType' },
+      { value: EOptionsPropertyItemType.OPERATION_CONDITION, label: 'operationCondition' },
+      { value: EOptionsPropertyItemType.ACTIVE_STATUS, label: 'activeStatus' },
+      { value: EOptionsPropertyItemType.FREEZE_STATUS, label: 'freezeStatus' }
     ];
 
   constructor(private readonly fb: FormBuilder, private readonly metadataApi: MetadataApiService) {}
