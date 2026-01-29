@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MetadataApiService } from '../../../../core/api/metadata-api.service';
-import { EComponentType, EPropertyItemType } from '../../../../core/models/enums';
+import {
+  EComponentType,
+  EOptionsPropertyItemType,
+  EPropertyItemType
+} from '../../../../core/models/enums';
 import { EComponentTypeLabelMap } from '../../../../core/models/enums.labels';
 import { MetaData, Option, PropertyItem } from '../../../../core/models/metadata.models';
 
@@ -127,6 +131,7 @@ export class PropertyItemsPageComponent implements OnInit {
     }
 
     const selectedType = this.form.value.type ?? EComponentType.TextInputComponent;
+    const resolvedOptions = this.getResolvedOptionsForForm(this.form);
     const payload = {
       itemName: this.form.value.itemName ?? '',
       title: this.form.value.title ?? '',
@@ -142,7 +147,7 @@ export class PropertyItemsPageComponent implements OnInit {
       showContextMenu: this.form.value.showContextMenu ?? false,
       propertyItemType: this.form.value.propertyItemType ?? EPropertyItemType.DEFAULT,
       selectedVisible: this.form.value.selectedVisible ?? true,
-      options: this.isOptionBasedType(selectedType) ? (this.form.value.options ?? []) : []
+      options: this.isOptionBasedType(selectedType) ? resolvedOptions : []
     };
 
     this.isSaving = true;
@@ -232,6 +237,7 @@ export class PropertyItemsPageComponent implements OnInit {
     }
 
     const selectedType = this.editForm.value.type ?? this.editingItem.type;
+    const resolvedOptions = this.getResolvedOptionsForForm(this.editForm);
     const payload = {
       itemName: this.editForm.value.itemName ?? this.editingItem.itemName,
       title: this.editForm.value.title ?? this.editingItem.title,
@@ -247,7 +253,7 @@ export class PropertyItemsPageComponent implements OnInit {
       showContextMenu: this.editForm.value.showContextMenu ?? false,
       propertyItemType: this.editForm.value.propertyItemType ?? this.editingItem.propertyItemType,
       selectedVisible: this.editForm.value.selectedVisible ?? true,
-      options: this.isOptionBasedType(selectedType) ? (this.editForm.value.options ?? []) : []
+      options: this.isOptionBasedType(selectedType) ? resolvedOptions : []
     };
 
     this.isSaving = true;
@@ -292,12 +298,43 @@ export class PropertyItemsPageComponent implements OnInit {
         return this.isOptionBasedType(type);
       }
 
-      getFilteredOptions(searchTerm: string): Option[] {
-          const normalized = searchTerm.trim().toLowerCase();
-          if (!normalized) {
-            return this.options;
+      shouldShowOptions(formGroup: FormGroup): boolean {
+          const type = formGroup.get('type')?.value as EComponentType | null | undefined;
+          if (!type || !this.isOptionsComponent(type)) {
+            return false;
           }
-          return this.options.filter((option) => {
+          return this.getOptionsForForm(formGroup).length > 0;
+        }
+
+        isSelectComponent(formGroup: FormGroup): boolean {
+          const type = formGroup.get('type')?.value as EComponentType | null | undefined;
+          return type === EComponentType.SelectComponent || type === EComponentType.HiddenComponent;
+        }
+
+        isSwitchComponent(formGroup: FormGroup): boolean {
+          const type = formGroup.get('type')?.value as EComponentType | null | undefined;
+          return type === EComponentType.SwitchComponent;
+        }
+
+        getOptionsForForm(formGroup: FormGroup): Option[] {
+          const itemName = (formGroup.get('itemName')?.value ?? '').toString();
+
+          const optionType = this.mapItemNameToOptionsType(itemName);
+
+          if (!optionType) {
+            return [];
+          }
+          console.log(this.options);
+          return this.options.filter((option) => option.optionsPropertyItemType === optionType);
+        }
+
+        getFilteredOptions(formGroup: FormGroup, searchTerm: string): Option[] {
+          const normalized = searchTerm.trim().toLowerCase();
+          const filteredOptions = this.getOptionsForForm(formGroup);
+          if (!normalized) {
+            return filteredOptions;
+          }
+         return filteredOptions.filter((option) => {
             const label = option.label?.toLowerCase() ?? '';
             const value = option.value?.toLowerCase() ?? '';
             return label.includes(normalized) || value.includes(normalized);
@@ -318,4 +355,81 @@ export class PropertyItemsPageComponent implements OnInit {
           formGroup.get('options')?.setValue(nextSelection);
           formGroup.get('options')?.markAsDirty();
         }
+
+        toggleSingleOptionSelection(formGroup: FormGroup, option: Option, checked: boolean): void {
+            if (checked) {
+              formGroup.get('options')?.setValue([option]);
+            } else {
+              formGroup.get('options')?.setValue([]);
+            }
+            formGroup.get('options')?.markAsDirty();
+          }
+
+          setSingleOptionByValue(formGroup: FormGroup, value: string): void {
+            const option = this.getOptionsForForm(formGroup).find((item) => item.value === value);
+            formGroup.get('options')?.setValue(option ? [option] : []);
+            formGroup.get('options')?.markAsDirty();
+          }
+
+          getSelectedOptionValue(formGroup: FormGroup): string {
+            const selected = (formGroup.value.options ?? []) as Option[];
+            return selected[0]?.value ?? '';
+          }
+
+          handleOptionContextChange(formGroup: FormGroup): void {
+            this.trimInvalidSelections(formGroup);
+          }
+
+          private trimInvalidSelections(formGroup: FormGroup): void {
+            const allowedOptions = this.getOptionsForForm(formGroup);
+            console.log(allowedOptions);
+            const selected = (formGroup.value.options ?? []) as Option[];
+            if (!selected.length) {
+              return;
+            }
+            const filtered = selected.filter((option) =>
+              allowedOptions.some((allowed) => allowed.value === option.value)
+            );
+            if (filtered.length !== selected.length) {
+              formGroup.get('options')?.setValue(filtered);
+            }
+          }
+
+          private getResolvedOptionsForForm(formGroup: FormGroup): Option[] {
+            const allowedOptions = this.getOptionsForForm(formGroup);
+            if (!allowedOptions.length) {
+              return [];
+            }
+            const selected = (formGroup.value.options ?? []) as Option[];
+            const filtered = selected.filter((option) =>
+              allowedOptions.some((allowed) => allowed.value === option.value)
+            );
+            if (this.isSelectComponent(formGroup) || this.isSwitchComponent(formGroup)) {
+              return filtered.slice(0, 1);
+            }
+            return filtered;
+          }
+
+          private mapItemNameToOptionsType(itemName: string): EOptionsPropertyItemType | null {
+            switch (itemName) {
+              case EOptionsPropertyItemType.TeamType:
+                return EOptionsPropertyItemType.TeamType;
+              case EOptionsPropertyItemType.OperationCondition:
+                return EOptionsPropertyItemType.OperationCondition;
+              case EOptionsPropertyItemType.ActiveStatus:
+                return EOptionsPropertyItemType.ActiveStatus;
+              case EOptionsPropertyItemType.FreezeStatus:
+                return EOptionsPropertyItemType.FreezeStatus;
+              default:
+                return null;
+            }
+          }
+
+          private isOptionsComponent(type: EComponentType): boolean {
+            return (
+              this.isOptionBasedType(type) ||
+              type === EComponentType.HiddenComponent ||
+              type === EComponentType.SwitchComponent
+            );
+          }
 }
