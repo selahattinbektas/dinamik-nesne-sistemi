@@ -18,4 +18,26 @@ export class UiContentFormComponent {
   @Output() refresh = new EventEmitter<void>();
   @Output() editUiContent = new EventEmitter<UiContent>();
   @Output() deleteUiContent = new EventEmitter<UiContent>();
+
+  itemDropdownOpen = false;
+
+    isItemSelected(itemId: number): boolean {
+      const selectedItems = (this.formGroup.get('itemIdList')?.value as number[] | null) ?? [];
+      return selectedItems.includes(itemId);
+    }
+
+    toggleItemDropdown(): void {
+      this.itemDropdownOpen = !this.itemDropdownOpen;
+    }
+
+
+    toggleItemSelection(itemId: number, checked: boolean): void {
+      const control = this.formGroup.get('itemIdList');
+      const selectedItems = (control?.value as number[] | null) ?? [];
+      const nextItems = checked
+        ? Array.from(new Set([...selectedItems, itemId]))
+        : selectedItems.filter((id) => id !== itemId);
+      control?.setValue(nextItems);
+      control?.markAsDirty();
+    }
 }

@@ -18,6 +18,7 @@ export class UiContentPageComponent implements OnInit {
   contentTypes = Object.values(EUiContentType);
   editingContent: UiContent | null = null;
   propertyItemOptions: { value: number; label: string }[] = [];
+  editItemDropdownOpen = false;
 
   form = this.fb.group({
     name: ['', Validators.required],
@@ -111,6 +112,7 @@ export class UiContentPageComponent implements OnInit {
       type: content.type ?? EUiContentType.DEFAULT,
       itemIdList: content.itemIdList ?? []
     });
+    this.editItemDropdownOpen = false;
     this.isEditDialogOpen = true;
   }
 
@@ -168,4 +170,35 @@ export class UiContentPageComponent implements OnInit {
       }
     });
   }
+
+  isEditItemSelected(itemId: number): boolean {
+      const selectedItems = (this.editForm.get('itemIdList')?.value as number[] | null) ?? [];
+      return selectedItems.includes(itemId);
+    }
+
+    toggleEditItemDropdown(): void {
+      this.editItemDropdownOpen = !this.editItemDropdownOpen;
+    }
+
+    getEditItemSelectionLabel(): string {
+      const selectedItems = (this.editForm.get('itemIdList')?.value as number[] | null) ?? [];
+      if (!selectedItems.length) {
+        return 'Seçim yapın';
+      }
+
+      const selectedLabels = this.propertyItemOptions
+        .filter((option) => selectedItems.includes(option.value))
+        .map((option) => option.label);
+      return selectedLabels.length ? selectedLabels.join(', ') : `${selectedItems.length} seçildi`;
+    }
+
+    toggleEditItemSelection(itemId: number, checked: boolean): void {
+      const control = this.editForm.get('itemIdList');
+      const selectedItems = (control?.value as number[] | null) ?? [];
+      const nextItems = checked
+        ? Array.from(new Set([...selectedItems, itemId]))
+        : selectedItems.filter((id) => id !== itemId);
+      control?.setValue(nextItems);
+      control?.markAsDirty();
+    }
 }

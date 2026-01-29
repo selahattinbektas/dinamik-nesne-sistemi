@@ -36,11 +36,27 @@
         </label>
         <label class="form-field">
           Item ID List
-          <select formControlName="itemIdList" multiple>
-            <option *ngFor="let option of propertyItemOptions" [ngValue]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
+            <div class="multi-select-dropdown">
+                <button
+                        type="button"
+                        class="multi-select-toggle"
+                        (click)="toggleEditItemDropdown()"
+                        [attr.aria-expanded]="editItemDropdownOpen"
+                >
+                    {{ getEditItemSelectionLabel() }}
+                </button>
+                <div class="multi-select-menu" *ngIf="editItemDropdownOpen">
+                    <label class="multi-select-option" *ngFor="let option of propertyItemOptions">
+                        <input
+                                type="checkbox"
+                                [checked]="isEditItemSelected(option.value)"
+                                (change)="toggleEditItemSelection(option.value, $event.target.checked)"
+                        />
+                        <span>{{ option.label }}</span>
+                    </label>
+                    <div class="multi-select-empty" *ngIf="!propertyItemOptions.length">Kayıt bulunamadı.</div>
+                </div>
+            </div>
         </label>
       </div>
 
