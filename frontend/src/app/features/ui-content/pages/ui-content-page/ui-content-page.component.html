@@ -31,7 +31,7 @@
             Tip
             UI Content Type
           <select formControlName="type">
-            <option *ngFor="let type of contentTypes" [value]="type">{{ type }}</option>
+              <option *ngFor="let type of contentTypes" [value]="type">{{ type | uiContentTypeLabel }}</option>
           </select>
         </label>
         <label class="form-field">

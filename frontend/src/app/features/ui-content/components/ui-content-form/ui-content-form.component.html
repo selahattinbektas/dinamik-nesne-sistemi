@@ -11,7 +11,7 @@
     <label class="form-field">
         UI Content Type
       <select formControlName="type">
-        <option *ngFor="let type of contentTypes" [value]="type">{{ type }}</option>
+          <option *ngFor="let type of contentTypes" [value]="type">{{ type | uiContentTypeLabel }}</option>
       </select>
     </label>
     <label class="form-field">
@@ -47,7 +47,7 @@
     <tr *ngFor="let item of uiContents">
       <td>{{ item.name }}</td>
       <td>{{ item.cssClassName }}</td>
-      <td><span class="badge">{{ item.type }}</span></td>
+        <td><span class="badge">{{ item.type | uiContentTypeLabel }}</span></td>
       <td>{{ item.itemIdList?.join(', ') }}</td>
       <td>
         <div class="table-actions">
