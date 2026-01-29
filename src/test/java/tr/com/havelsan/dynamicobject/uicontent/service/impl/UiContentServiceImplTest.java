@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import tr.com.havelsan.dynamicobject.common.enums.EUiContentType;
 import tr.com.havelsan.dynamicobject.uicontent.api.dto.UiContentRequestDTO;
+import tr.com.havelsan.dynamicobject.uicontent.api.mapper.UiContentMapper;
 import tr.com.havelsan.dynamicobject.uicontent.domain.UiContent;
 import tr.com.havelsan.dynamicobject.uicontent.repository.UiContentRepository;
 
@@ -30,6 +31,9 @@ class UiContentServiceImplTest {
     @Mock
     private UiContentRepository uiContentRepository;
 
+    @Mock
+    private UiContentMapper uiContentMapper;
+
     @Captor
     private ArgumentCaptor<UiContent> uiContentCaptor;
 
@@ -37,7 +41,7 @@ class UiContentServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        uiContentService = new UiContentServiceImpl(uiContentRepository);
+        uiContentService = new UiContentServiceImpl(uiContentRepository, uiContentMapper);
     }
 
     @Test
@@ -51,22 +55,26 @@ class UiContentServiceImplTest {
         assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
         assertEquals("UI content already exists", exception.getReason());
         verify(uiContentRepository, never()).save(any());
+        verify(uiContentMapper, never()).toEntity(any());
     }
 
     @Test
     void createUiContent_whenNameDoesNotExist_mapsAndSaves() {
         UiContentRequestDTO dto = buildDto("content", "card", EUiContentType.CONTROL_DRIVING, List.of(10, 20));
+        UiContent mapped = buildContent(dto.getName(), dto.getCssClassName(), dto.getType(), dto.getItemIdList());
         when(uiContentRepository.existsById("content")).thenReturn(false);
+        when(uiContentMapper.toEntity(dto)).thenReturn(mapped);
         when(uiContentRepository.save(any(UiContent.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         UiContent saved = uiContentService.createUiContent(dto);
 
         verify(uiContentRepository).save(uiContentCaptor.capture());
+        verify(uiContentMapper).toEntity(dto);
         UiContent captured = uiContentCaptor.getValue();
-        assertEquals(dto.getName(), captured.getName());
-        assertEquals(dto.getCssClassName(), captured.getCssClassName());
-        assertEquals(dto.getType(), captured.getType());
-        assertEquals(dto.getItemIdList(), captured.getItemIdList());
+        assertEquals(mapped.getName(), captured.getName());
+        assertEquals(mapped.getCssClassName(), captured.getCssClassName());
+        assertEquals(mapped.getType(), captured.getType());
+        assertEquals(mapped.getItemIdList(), captured.getItemIdList());
         assertEquals("content", saved.getName());
         assertEquals("card", saved.getCssClassName());
         assertEquals(EUiContentType.CONTROL_DRIVING, saved.getType());

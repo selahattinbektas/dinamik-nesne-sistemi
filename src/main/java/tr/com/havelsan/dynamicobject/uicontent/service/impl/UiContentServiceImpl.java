@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import tr.com.havelsan.dynamicobject.uicontent.api.dto.UiContentRequestDTO;
+import tr.com.havelsan.dynamicobject.uicontent.api.mapper.UiContentMapper;
 import tr.com.havelsan.dynamicobject.uicontent.domain.UiContent;
 import tr.com.havelsan.dynamicobject.uicontent.repository.UiContentRepository;
 import tr.com.havelsan.dynamicobject.uicontent.service.UiContentService;
@@ -12,9 +13,11 @@ import tr.com.havelsan.dynamicobject.uicontent.service.UiContentService;
 @Service
 public class UiContentServiceImpl implements UiContentService {
     private final UiContentRepository uiContentRepository;
+    private final UiContentMapper uiContentMapper;
 
-    public UiContentServiceImpl(UiContentRepository uiContentRepository) {
+    public UiContentServiceImpl(UiContentRepository uiContentRepository, UiContentMapper uiContentMapper) {
         this.uiContentRepository = uiContentRepository;
+        this.uiContentMapper = uiContentMapper;
     }
 
     @Override
@@ -22,7 +25,7 @@ public class UiContentServiceImpl implements UiContentService {
         if (uiContentRepository.existsById(dto.getName())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "UI content already exists");
         }
-        UiContent content = mapContent(dto);
+        UiContent content = uiContentMapper.toEntity(dto);
         return uiContentRepository.save(content);
     }
 
@@ -54,12 +57,5 @@ public class UiContentServiceImpl implements UiContentService {
         return uiContentRepository.findAll();
     }
 
-    private UiContent mapContent(UiContentRequestDTO dto) {
-        UiContent content = new UiContent();
-        content.setName(dto.getName());
-        content.setCssClassName(dto.getCssClassName());
-        content.setType(dto.getType());
-        content.setItemIdList(dto.getItemIdList());
-        return content;
-    }
+
 }
