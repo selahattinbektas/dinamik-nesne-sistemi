@@ -303,10 +303,7 @@ export class PropertyItemsPageComponent implements OnInit {
       }
 
       shouldShowOptions(formGroup: FormGroup): boolean {
-          const type = formGroup.get('type')?.value as EComponentType | null | undefined;
-          if (!type || !this.isOptionsComponent(type)) {
-            return false;
-          }
+
           return this.getOptionsForForm(formGroup).length > 0;
         }
 
@@ -321,6 +318,9 @@ export class PropertyItemsPageComponent implements OnInit {
         }
 
         getOptionsForForm(formGroup: FormGroup): Option[] {
+            if (!this.shouldAllowOptionsForForm(formGroup)) {
+                  return [];
+                }
           const itemName = (formGroup.get('itemName')?.value ?? '').toString();
 
           const optionType = this.mapItemNameToOptionsType(itemName);
@@ -473,4 +473,16 @@ export class PropertyItemsPageComponent implements OnInit {
                   return undefined;
               }
             }
+
+            private shouldAllowOptionsForForm(formGroup: FormGroup): boolean {
+                const type = formGroup.get('type')?.value as EComponentType | null | undefined;
+                if (!type || !this.isOptionsComponent(type)) {
+                  return false;
+                }
+                const itemName = (formGroup.get('itemName')?.value ?? '').toString();
+                if (itemName === EOptionsPropertyItemType.TEAM_TYPE) {
+                  return type === EComponentType.SelectComponent;
+                }
+                return true;
+              }
 }
