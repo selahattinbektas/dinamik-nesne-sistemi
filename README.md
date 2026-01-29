@@ -26,3 +26,181 @@ ADIMLAR
 --------
 1) Option ekleme ve listeleme işlemleri yapılır. Burada property item name değerine göre gruplama yapılır.
    <img width="2150" height="1444" alt="image" src="https://github.com/user-attachments/assets/cc0d0e12-e6cc-4a04-8683-82da128052e8" />
+
+2) Bir metedatayı name, entityType ve propertyItemList ile tek seferde oluşturmak için;
+    POST - http://localhost:8080/api/metadata - http://localhost:8080/swagger-ui/index.html#/meta-data-controller/createMetaData
+   Örnek Veri:
+   {
+    "name": "IHA",
+    "entityType": "CGF",
+    "propertyItemList": [
+      {
+        "type": "SliderComponent",
+        "id": 999,
+        "itemName": "altitude",
+        "title": "İrtifa(m)",
+        "unit": "m",
+        "option": [],
+        "min": 0,
+        "max": 8000,
+        "defaultValue": 100,
+        "propertyItemType": "DEFAULT"
+      },
+      {
+        "type": "PositionComponent",
+        "id": 1000,
+        "itemName": "Location",
+        "title": "Konum",
+        "unit": "vector",
+        "options": [],
+        "min": -180,
+        "max": 180,
+        "defaultValue": "",
+        "propertyItemType": "DEFAULT"
+      },
+      {
+        "type": "DirectionComponent",
+        "id": 1001,
+        "itemName": "yaw",
+        "title": "İstikamet Bilgisi",
+        "unit": "°",
+        "options": [],
+        "min": 0,
+        "max": 360,
+        "defaultValue": "270",
+        "propertyItemType": "DEFAULT"
+      },
+      {
+        "type": "DirectionComponent",
+        "id": 22,
+        "itemName": "controlDrivingYaw",
+        "title": "İstikamet Bilgisi",
+        "unit": "°",
+        "options": [],
+        "min": 0,
+        "max": 360,
+        "defaultValue": "270",
+        "propertyItemType": "DEFAULT"
+      },
+      {
+        "type": "SliderComponent",
+        "id": 1002,
+        "itemName": "speed",
+        "title": "Maksimum Hız(km/h)",
+        "unit": "km/h",
+        "option": [],
+        "min": 0,
+        "max": 500,
+        "defaultValue": 50,
+        "propertyItemType": "LEADER_ONLY"
+      },
+      {
+        "type": "SliderComponent",
+        "id": 21,
+        "itemName": "controlDrivingSpeed",
+        "title": "Maksimum Hız(km/h)",
+        "unit": "km/h",
+        "option": [],
+        "min": 0,
+        "max": 500,
+        "defaultValue": 0,
+        "propertyItemType": "DEFAULT"
+      },
+      {
+        "type": "SelectComponent",
+        "id": 1011,
+        "itemName": "teamType",
+        "title": "Tehditin Sınıflandırılması",
+        "unit": "option",
+        "options": [
+          {
+            "value": "0",
+            "label": "DÜŞMAN"
+          },
+          {
+            "value": "1",
+            "label": "DOST"
+          }
+        ],
+        "min": 0,
+        "max": 0,
+        "defaultValue": "2",
+        "propertyItemType": "LEADER_ONLY"
+      },
+      {
+        "type": "HiddenComponent",
+        "id": 1012,
+        "itemName": "operationCondition",
+        "title": "Hasar Durumu",
+        "unit": "option",
+        "options": [
+          {
+            "value": "NOT_SPECIFIED",
+            "label": "BELİRTİLMEDİ"
+          },
+          {
+            "value": "DAMAGED",
+            "label": "HASARLI"
+          },
+          {
+            "value": "DESTROYED",
+            "label": "YOK EDİLMİŞ"
+          }
+        ],
+        "min": 0,
+        "max": 0,
+        "defaultValue": "NOT_SPECIFIED",
+        "propertyItemType": "DEFAULT"
+      },
+      {
+        "type": "SwitchComponent",
+        "id": 1013,
+        "itemName": "activeStatus",
+        "title": "Aktif / Pasif",
+        "unit": "boolean",
+        "options": [
+          {
+            "value": "true",
+            "label": "AKTİF"
+          },
+          {
+            "value": "false",
+            "label": "PASİF"
+          }
+        ],
+        "min": 0,
+        "max": 0,
+        "defaultValue": "true",
+        "propertyItemType": "LEADER_AND_MEMBER_ONLY"
+      },
+      {
+        "type": "SwitchComponent",
+        "id": 1014,
+        "itemName": "freezeStatus",
+        "title": "Dondurma",
+        "unit": "boolean",
+        "options": [
+          {
+            "value": "true",
+            "label": "DONDUR"
+          },
+          {
+            "value": "false",
+            "label": "YÜRÜT"
+          }
+        ],
+        "min": 0,
+        "max": 0,
+        "defaultValue": "false",
+        "showContextMenu": true,
+        "propertyItemType": "LEADER_ONLY"
+      }
+    ]
+
+  }
+
+
+3) MetaData Eklemeleri Yapılır
+   
+   <img width="2246" height="1290" alt="image" src="https://github.com/user-attachments/assets/76a1c005-e97a-4748-82a6-368554491fbc" />
+
