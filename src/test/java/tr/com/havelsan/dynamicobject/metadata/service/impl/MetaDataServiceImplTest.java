@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import tr.com.havelsan.dynamicobject.common.enums.EOptionsPropertyItemType;
 import tr.com.havelsan.dynamicobject.common.sequence.SequenceGeneratorService;
 import tr.com.havelsan.dynamicobject.metadata.api.dto.MetaDataClassificationDTO;
 import tr.com.havelsan.dynamicobject.metadata.api.dto.MetaDataDTO;
@@ -227,7 +228,10 @@ class MetaDataServiceImplTest {
         OptionDTO dto = new OptionDTO();
         dto.setValue("TEAM_ALPHA");
         dto.setLabel("Team Alpha");
-        when(optionRepository.existsById("TEAM_ALPHA")).thenReturn(false);
+        dto.setOptionsPropertyItemType(EOptionsPropertyItemType.TEAM_TYPE);
+        when(optionRepository.existsByValueAndLabelAndOptionsPropertyItemType(
+                "TEAM_ALPHA", "Team Alpha", EOptionsPropertyItemType.TEAM_TYPE))
+                .thenReturn(false);
         when(optionRepository.save(any(Option.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Option created = service.createOption(dto);

@@ -121,7 +121,13 @@ public class MetaDataServiceImpl implements MetaDataService {
             item.setSelectedVisible(dto.isSelectedVisible());
             List<Option> options = new ArrayList<>();
             if (dto.getOptions() != null) {
-                dto.getOptions().forEach(optionDTO -> options.add(new Option(optionDTO.getValue(), optionDTO.getLabel())));
+                dto.getOptions().forEach(
+                        optionDTO -> options.add(new Option(
+                                optionDTO.getValue(),
+                                optionDTO.getLabel(),
+                                optionDTO.getOptionsPropertyItemType()
+                        ))
+                );
             }
             item.setOptions(options);
             mappedItems.add(item);
@@ -223,7 +229,13 @@ public class MetaDataServiceImpl implements MetaDataService {
         item.setSelectedVisible(dto.isSelectedVisible());
         List<Option> options = new ArrayList<>();
         if (dto.getOptions() != null) {
-            dto.getOptions().forEach(optionDTO -> options.add(new Option(optionDTO.getValue(), optionDTO.getLabel())));
+            dto.getOptions().forEach(
+                    optionDTO -> options.add(new Option(
+                            optionDTO.getValue(),
+                            optionDTO.getLabel(),
+                            optionDTO.getOptionsPropertyItemType()
+                    ))
+            );
         }
         item.setOptions(options);
         saveMetaDataContainingProperty(item);
@@ -280,7 +292,13 @@ public class MetaDataServiceImpl implements MetaDataService {
         item.setSelectedVisible(dto.isSelectedVisible());
         List<Option> options = new ArrayList<>();
         if (dto.getOptions() != null) {
-            dto.getOptions().forEach(optionDTO -> options.add(new Option(optionDTO.getValue(), optionDTO.getLabel())));
+            dto.getOptions().forEach(
+                    optionDTO -> options.add(new Option(
+                            optionDTO.getValue(),
+                            optionDTO.getLabel(),
+                            optionDTO.getOptionsPropertyItemType()
+                    ))
+            );
         }
         item.setOptions(options);
         return item;
@@ -305,10 +323,11 @@ public class MetaDataServiceImpl implements MetaDataService {
     //options
     @Override
     public Option createOption(OptionDTO dto) {
-        if (optionRepository.existsById(dto.getValue())) {
+        if (optionRepository.existsByValueAndLabelAndOptionsPropertyItemType(
+                dto.getValue(), dto.getLabel(), dto.getOptionsPropertyItemType())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Option already exists");
         }
-        Option option = new Option(dto.getValue(), dto.getLabel());
+        Option option = new Option(dto.getValue(), dto.getLabel(), dto.getOptionsPropertyItemType());
         return optionRepository.save(option);
     }
 
@@ -323,6 +342,7 @@ public class MetaDataServiceImpl implements MetaDataService {
         Option option = getOptionById(value);
         option.setValue(dto.getValue());
         option.setLabel(dto.getLabel());
+        option.setOptionsPropertyItemType(dto.getOptionsPropertyItemType());
         if (!value.equals(option.getValue())) {
             optionRepository.deleteById(value);
         }

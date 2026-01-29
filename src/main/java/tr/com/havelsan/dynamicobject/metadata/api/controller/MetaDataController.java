@@ -171,7 +171,8 @@ public class MetaDataController {
                             value = """
                                     {
                                       "value": "TEAM_ALPHA",
-                                      "label": "Team Alpha"
+                                      "label": "Team Alpha",
+                                      "optionsPropertyItemType": "teamType"
                                     }
                                     """
                     )

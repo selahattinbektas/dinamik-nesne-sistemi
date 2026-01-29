@@ -10,6 +10,13 @@
         Label
         <input type="text" formControlName="label" placeholder="Team Alpha" />
       </label>
+        <label class="form-field">
+            Item Name
+            <select formControlName="optionsPropertyItemType">
+                <option [ngValue]="null">Seçiniz</option>
+                <option *ngFor="let item of optionsPropertyItemTypes" [value]="item.value">{{ item.label }}</option>
+            </select>
+        </label>
     </div>
 
     <div style="margin-top: 16px; display: flex; gap: 12px;">
@@ -25,6 +32,7 @@
       <tr>
         <th>Value</th>
         <th>Label</th>
+          <th>Item Name</th>
         <th>Property Item Sayısı</th>
         <th>İşlemler</th>
       </tr>
@@ -33,6 +41,7 @@
       <tr *ngFor="let item of options">
         <td>{{ item.option.value }}</td>
         <td>{{ item.option.label }}</td>
+          <td>{{ item.option.optionsPropertyItemType }}</td>
         <td>{{ item.usageCount }}</td>
         <td>
           <div class="table-actions">
@@ -64,6 +73,13 @@
           Label
           <input type="text" formControlName="label" />
         </label>
+          <label class="form-field">
+              Item Name
+              <select formControlName="optionsPropertyItemType">
+                  <option [ngValue]="null">Seçiniz</option>
+                  <option *ngFor="let item of optionsPropertyItemTypes" [value]="item.value">{{ item.label }}</option>
+              </select>
+          </label>
       </div>
 
       <div class="modal-actions">

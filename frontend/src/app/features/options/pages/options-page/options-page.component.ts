@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { MetadataApiService } from '../../../../core/api/metadata-api.service';
 import { MetaData, Option } from '../../../../core/models/metadata.models';
+import { EOptionsPropertyItemType } from '../../../../core/models/enums';
 
 interface OptionWithUsage {
   option: Option;
@@ -23,13 +24,22 @@ export class OptionsPageComponent implements OnInit {
 
   form = this.fb.group({
     value: ['', Validators.required],
-    label: ['', Validators.required]
+    label: ['', Validators.required],
+    optionsPropertyItemType: [null as EOptionsPropertyItemType | null, Validators.required]
   });
 
   editForm = this.fb.group({
     value: [{ value: '', disabled: true }, Validators.required],
-    label: ['', Validators.required]
+    label: ['', Validators.required],
+    optionsPropertyItemType: [null as EOptionsPropertyItemType | null, Validators.required]
   });
+
+  optionsPropertyItemTypes = [
+      { value: EOptionsPropertyItemType.TeamType, label: 'teamType' },
+      { value: EOptionsPropertyItemType.OperationCondition, label: 'operationCondition' },
+      { value: EOptionsPropertyItemType.ActiveStatus, label: 'activeStatus' },
+      { value: EOptionsPropertyItemType.FreezeStatus, label: 'freezeStatus' }
+    ];
 
   constructor(private readonly fb: FormBuilder, private readonly metadataApi: MetadataApiService) {}
 
@@ -63,14 +73,15 @@ export class OptionsPageComponent implements OnInit {
 
     const payload = {
       value: this.form.value.value ?? '',
-      label: this.form.value.label ?? ''
+      label: this.form.value.label ?? '',
+      optionsPropertyItemType: this.form.value.optionsPropertyItemType ?? undefined
     };
 
     this.isSaving = true;
     this.errorMessage = '';
     this.metadataApi.createOption(payload).subscribe({
       next: () => {
-        this.form.reset({ value: '', label: '' });
+        this.form.reset({ value: '', label: '', optionsPropertyItemType: null });
         this.loadOptions();
         this.isSaving = false;
       },
@@ -105,7 +116,8 @@ export class OptionsPageComponent implements OnInit {
     this.editingOption = option;
     this.editForm.reset({
       value: option.value,
-      label: option.label
+      label: option.label,
+      optionsPropertyItemType: option.optionsPropertyItemType ?? null
     });
     this.isEditDialogOpen = true;
   }
@@ -123,7 +135,8 @@ export class OptionsPageComponent implements OnInit {
 
     const payload = {
       value: this.editForm.value.value ?? this.editingOption.value,
-      label: this.editForm.value.label ?? this.editingOption.label
+      label: this.editForm.value.label ?? this.editingOption.label,
+      optionsPropertyItemType: this.editForm.value.optionsPropertyItemType ?? this.editingOption.optionsPropertyItemType
     };
 
     this.isSaving = true;
@@ -145,6 +158,7 @@ export class OptionsPageComponent implements OnInit {
 
   private mapOptionsWithUsage(options: Option[], metadata: MetaData[]): OptionWithUsage[] {
     const usageMap = new Map<string, number>();
+    const itemNameMap = new Map<string, Set<string>>();
     metadata.forEach((metaData) => {
       metaData.propertyItemList?.forEach((item) => {
         item.options?.forEach((option) => {
@@ -158,4 +172,11 @@ export class OptionsPageComponent implements OnInit {
       usageCount: usageMap.get(option.value) ?? 0
     }));
   }
+
+  getOptionTypeLabel(option: Option): string {
+      if (!option.optionsPropertyItemType) {
+        return '-';
+      }
+      return this.optionsPropertyItemTypes.find((item) => item.value === option.optionsPropertyItemType)?.label ?? '-';
+    }
 }

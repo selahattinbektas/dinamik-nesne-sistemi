@@ -1,8 +1,9 @@
-import { EComponentType, EEntityType, EPropertyItemType } from './enums';
+import { EComponentType, EEntityType, EOptionsPropertyItemType, EPropertyItemType } from './enums';
 
 export interface OptionDTO {
   value: string;
   label: string;
+  optionsPropertyItemType?: EOptionsPropertyItemType;
 }
 
 export interface Option extends OptionDTO {}

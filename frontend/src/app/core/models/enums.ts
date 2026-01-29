@@ -34,3 +34,10 @@ export enum EPropertyItemType {
   LEADER_AND_MEMBER_ONLY = 'LEADER_AND_MEMBER_ONLY',
   LEADER_ONLY = 'LEADER_ONLY'
 }
+
+export enum EOptionsPropertyItemType {
+  TeamType = 'teamType',
+  OperationCondition = 'operationCondition',
+  ActiveStatus = 'activeStatus',
+  FreezeStatus = 'freezeStatus'
+}
