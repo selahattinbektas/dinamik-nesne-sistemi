@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import tr.com.havelsan.dynamicobject.common.enums.EUiContentType;
-import tr.com.havelsan.dynamicobject.uicontent.api.dto.UiContentDTO;
+import tr.com.havelsan.dynamicobject.uicontent.api.dto.UiContentRequestDTO;
 import tr.com.havelsan.dynamicobject.uicontent.domain.UiContent;
 import tr.com.havelsan.dynamicobject.uicontent.repository.UiContentRepository;
 
@@ -42,7 +42,7 @@ class UiContentServiceImplTest {
 
     @Test
     void createUiContent_whenNameExists_throwsConflict() {
-        UiContentDTO dto = buildDto("existing", "btn", EUiContentType.DEFAULT, List.of(1, 2));
+        UiContentRequestDTO dto = buildDto("existing", "btn", EUiContentType.DEFAULT, List.of(1, 2));
         when(uiContentRepository.existsById("existing")).thenReturn(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
@@ -55,7 +55,7 @@ class UiContentServiceImplTest {
 
     @Test
     void createUiContent_whenNameDoesNotExist_mapsAndSaves() {
-        UiContentDTO dto = buildDto("content", "card", EUiContentType.CONTROL_DRIVING, List.of(10, 20));
+        UiContentRequestDTO dto = buildDto("content", "card", EUiContentType.CONTROL_DRIVING, List.of(10, 20));
         when(uiContentRepository.existsById("content")).thenReturn(false);
         when(uiContentRepository.save(any(UiContent.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -97,7 +97,7 @@ class UiContentServiceImplTest {
     @Test
     void updateUiContent_whenDtoFieldsNull_keepsExistingValues() {
         UiContent existing = buildContent("content", "original", EUiContentType.DEFAULT, List.of(1, 2));
-        UiContentDTO dto = new UiContentDTO();
+        UiContentRequestDTO dto = new UiContentRequestDTO();
         dto.setItemIdList(null);
         when(uiContentRepository.findById("content")).thenReturn(Optional.of(existing));
         when(uiContentRepository.save(existing)).thenReturn(existing);
@@ -114,7 +114,7 @@ class UiContentServiceImplTest {
     @Test
     void updateUiContent_whenDtoHasValues_updatesFieldsAndItemList() {
         UiContent existing = buildContent("content", "original", EUiContentType.DEFAULT, List.of(1, 2));
-        UiContentDTO dto = buildDto(null, "updated", EUiContentType.AREA_RULE_PROPERTIES, List.of(7, 8, 9));
+        UiContentRequestDTO dto = buildDto(null, "updated", EUiContentType.AREA_RULE_PROPERTIES, List.of(7, 8, 9));
         when(uiContentRepository.findById("content")).thenReturn(Optional.of(existing));
         when(uiContentRepository.save(existing)).thenReturn(existing);
 
@@ -129,7 +129,7 @@ class UiContentServiceImplTest {
 
     @Test
     void updateUiContent_whenMissing_throwsNotFound() {
-        UiContentDTO dto = buildDto(null, "updated", EUiContentType.AREA_RULE_PROPERTIES, List.of(7));
+        UiContentRequestDTO dto = buildDto(null, "updated", EUiContentType.AREA_RULE_PROPERTIES, List.of(7));
         when(uiContentRepository.findById("missing")).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
@@ -175,8 +175,8 @@ class UiContentServiceImplTest {
         verify(uiContentRepository).findAll();
     }
 
-    private UiContentDTO buildDto(String name, String cssClassName, EUiContentType type, List<Integer> itemIds) {
-        UiContentDTO dto = new UiContentDTO();
+    private UiContentRequestDTO buildDto(String name, String cssClassName, EUiContentType type, List<Integer> itemIds) {
+        UiContentRequestDTO dto = new UiContentRequestDTO();
         dto.setName(name);
         dto.setCssClassName(cssClassName);
         dto.setType(type);

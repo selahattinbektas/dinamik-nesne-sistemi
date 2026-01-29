@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import tr.com.havelsan.dynamicobject.common.enums.EUiContentType;
 
-public class UiContentDTO {
+public class UiContentRequestDTO {
     private String name;
     private String cssClassName;
     private EUiContentType type = EUiContentType.DEFAULT;
     private List<Integer> itemIdList = new ArrayList<>();
 
-    public UiContentDTO() {
+    public UiContentRequestDTO() {
     }
 
     public String getName() {
