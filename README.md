@@ -22,3 +22,7 @@ Kullanım
 
 <img width="2688" height="1438" alt="image" src="https://github.com/user-attachments/assets/97131a6e-fdaf-42d6-95c2-7ae9da86d317" />
 
+ADIMLAR
+--------
+1) Option ekleme ve listeleme işlemleri yapılır. Burada property item name değerine göre gruplama yapılır.
+   <img width="2150" height="1444" alt="image" src="https://github.com/user-attachments/assets/cc0d0e12-e6cc-4a04-8683-82da128052e8" />
