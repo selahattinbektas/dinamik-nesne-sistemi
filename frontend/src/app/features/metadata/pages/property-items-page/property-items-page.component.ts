@@ -414,7 +414,7 @@ export class PropertyItemsPageComponent implements OnInit {
             const filtered = selected.filter((option) =>
               allowedOptions.some((allowed) => allowed.value === option.value)
             );
-            if (this.isSelectComponent(formGroup) || this.isSwitchComponent(formGroup)) {
+            if (this.isSwitchComponent(formGroup)) {
               return filtered.slice(0, 1);
             }
             return filtered;
