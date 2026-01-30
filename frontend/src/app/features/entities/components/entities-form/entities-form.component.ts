@@ -20,4 +20,5 @@ export class EntitiesFormComponent {
   @Output() metaDataChange = new EventEmitter<string>();
   @Output() viewClassification = new EventEmitter<EntityData>();
   @Output() viewUiContent = new EventEmitter<EntityData>();
+  @Output() deleteEntity = new EventEmitter<EntityData>();
 }

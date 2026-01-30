@@ -229,6 +229,16 @@ export class EntityPropertiesPageComponent implements OnInit {
     const key = this.getPropertyKey(item);
     return Object.prototype.hasOwnProperty.call(properties, key);
   }
+
+  isUnitSelectionType(item: PropertyItem | null): boolean {
+      const unit = item?.unit?.toLowerCase() ?? '';
+      return unit === 'option' || unit === 'boolean';
+    }
+
+    getUnitOptions(item: PropertyItem | null): PropertyItem['options'] {
+      return item?.options ?? [];
+    }
+
 private isOptionBasedType(type: EComponentType): boolean {
     return [
       EComponentType.SelectComponent,

@@ -103,47 +103,59 @@
     <h3 class="modal-title">Property Güncelle</h3>
     <form [formGroup]="editForm" (ngSubmit)="updateProperty()">
       <div class="form-grid">
-        <ng-container [ngSwitch]="editPropertyItem?.type">
-          <label class="form-field" *ngSwitchCase="'TEXT'">
-            Değer
-            <input type="text" formControlName="value" />
-          </label>
-          <label class="form-field" *ngSwitchCase="'TEXTAREA'">
-            Değer
-            <textarea rows="3" formControlName="value"></textarea>
-          </label>
-          <label class="form-field" *ngSwitchCase="'NUMBER'">
-            Değer
-            <input type="number" formControlName="value" />
-          </label>
-          <label class="form-field" *ngSwitchCase="'DATE'">
-            Değer
-            <input type="date" formControlName="value" />
-          </label>
-          <label class="form-field" *ngSwitchCase="'SELECT'">
+          <ng-container *ngIf="isUnitSelectionType(editPropertyItem); else editValueField">
+              <label class="form-field">
             Değer
             <select formControlName="value">
-              <option *ngFor="let option of editPropertyItem?.options" [value]="option.value">{{ option.label }}</option>
+                <option *ngFor="let option of getUnitOptions(editPropertyItem)" [value]="option.value">
+                    {{ option.label }}
+                </option>
             </select>
           </label>
-          <div class="form-field" *ngSwitchCase="'RADIO'">
-            <span>Değer</span>
-            <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
-              <label *ngFor="let option of editPropertyItem?.options" style="display: flex; align-items: center; gap: 6px;">
-                <input type="radio" formControlName="value" [value]="option.value" />
-                {{ option.label }}
-              </label>
-            </div>
-          </div>
-          <label class="form-field" *ngSwitchCase="'CHECKBOX'" style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" formControlName="value" />
-            Değer
-          </label>
-          <label class="form-field" *ngSwitchDefault>
-            Değer
-            <input type="text" formControlName="value" />
-          </label>
         </ng-container>
+          <ng-template #editValueField>
+              <ng-container [ngSwitch]="editPropertyItem?.type">
+                  <label class="form-field" *ngSwitchCase="'TEXT'">
+                      Değer
+                      <input type="text" formControlName="value" />
+                  </label>
+                  <label class="form-field" *ngSwitchCase="'TEXTAREA'">
+                      Değer
+                      <textarea rows="3" formControlName="value"></textarea>
+                  </label>
+                  <label class="form-field" *ngSwitchCase="'NUMBER'">
+                      Değer
+                      <input type="number" formControlName="value" />
+                  </label>
+                  <label class="form-field" *ngSwitchCase="'DATE'">
+                      Değer
+                      <input type="date" formControlName="value" />
+                  </label>
+                  <label class="form-field" *ngSwitchCase="'SELECT'">
+                      Değer
+                      <select formControlName="value">
+                          <option *ngFor="let option of editPropertyItem?.options" [value]="option.value">{{ option.label }}</option>
+                      </select>
+                  </label>
+                  <div class="form-field" *ngSwitchCase="'RADIO'">
+                      <span>Değer</span>
+                      <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+                          <label *ngFor="let option of editPropertyItem?.options" style="display: flex; align-items: center; gap: 6px;">
+                              <input type="radio" formControlName="value" [value]="option.value" />
+                              {{ option.label }}
+                          </label>
+                      </div>
+                  </div>
+                  <label class="form-field" *ngSwitchCase="'CHECKBOX'" style="display: flex; align-items: center; gap: 8px;">
+                      <input type="checkbox" formControlName="value" />
+                      Değer
+                  </label>
+                  <label class="form-field" *ngSwitchDefault>
+                      Değer
+                      <input type="text" formControlName="value" />
+                  </label>
+              </ng-container>
+          </ng-template>
       </div>
 
       <div class="modal-actions">

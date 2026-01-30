@@ -84,6 +84,26 @@ export class EntitiesPageComponent implements OnInit {
     });
   }
 
+    confirmDeleteEntity(entity: EntityData): void {
+      const confirmed = window.confirm(`'${entity.id}' kaydı silinecektir. Emin misiniz?`);
+      if (!confirmed) {
+        return;
+      }
+
+      this.isLoading = true;
+      this.errorMessage = '';
+      this.entitiesApi.deleteEntity(entity.id).subscribe({
+        next: () => {
+          this.entities = this.entities.filter((item) => item.id !== entity.id);
+          this.isLoading = false;
+        },
+        error: () => {
+          this.errorMessage = 'Entity silinemedi.';
+          this.isLoading = false;
+        }
+      });
+    }
+
   loadEntities(): void {
     this.isLoading = true;
     this.entitiesApi.getEntities().subscribe({
@@ -174,14 +194,7 @@ export class EntitiesPageComponent implements OnInit {
   private buildPropertiesForm(items: PropertyItem[]): void {
     const group: Record<string, unknown> = {};
     items.forEach((item) => {
-      let initialValue: unknown = '';
-      if (this.isBooleanType(item.type)) {
-        initialValue = false;
-      } else if (this.isNumericType(item.type)) {
-        initialValue = null;
-     } else if (this.isOptionBasedType(item.type)) {
-        initialValue = item.options?.[0]?.value ?? '';
-      }
+      const initialValue = this.resolveDefaultValue(item);
       group[item.itemName] = this.fb.control(initialValue);
     });
     this.propertiesForm = this.fb.group(group);
@@ -194,12 +207,15 @@ export class EntitiesPageComponent implements OnInit {
     this.propertyItems.forEach((item) => {
       const value = raw[item.itemName];
       if (this.isNumericType(item.type)) {
-        payload[item.itemName] = value === null || value === '' ? null : Number(value);
+              const fallback = this.resolveDefaultValue(item);
+              const resolved = value === null || value === '' || value === undefined ? fallback : Number(value);
+              payload[item.itemName] = Number.isNaN(resolved as number) ? fallback : resolved;
       } else if (this.isBooleanType(item.type)) {
-        payload[item.itemName] = Boolean(value);
+              payload[item.itemName] = value === null || value === undefined ? this.resolveDefaultValue(item) : Boolean(value);
       } else {
-        payload[item.itemName] = value ?? '';
-      }
+              const fallback = this.resolveDefaultValue(item);
+              payload[item.itemName] = value === null || value === undefined || value === '' ? fallback : value;
+            }
     });
     return payload;
   }
@@ -249,5 +265,39 @@ export class EntitiesPageComponent implements OnInit {
 
     private isBooleanType(type: EComponentType): boolean {
       return [EComponentType.ToggleComponent, EComponentType.SwitchComponent].includes(type);
+    }
+
+    private resolveDefaultValue(item: PropertyItem): unknown {
+      const defaultValue = item.defaultValue?.toString().trim();
+
+      if (this.isBooleanType(item.type)) {
+        if (defaultValue) {
+          return defaultValue.toLowerCase() === 'true';
+        }
+        return false;
+      }
+
+      if (this.isNumericType(item.type)) {
+        const parsed = defaultValue ? Number(defaultValue) : NaN;
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+        if (item.min !== null && item.min !== undefined) {
+          return item.min;
+        }
+        return 0;
+      }
+
+      if (this.isOptionBasedType(item.type)) {
+        if (defaultValue) {
+          const match = item.options?.find((option) => option.value === defaultValue);
+          if (match) {
+            return match.value;
+          }
+        }
+        return item.options?.[0]?.value ?? '';
+      }
+
+      return defaultValue ?? '';
     }
 }
