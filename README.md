@@ -206,3 +206,25 @@ ADIMLAR
    
    <img width="2246" height="1290" alt="image" src="https://github.com/user-attachments/assets/76a1c005-e97a-4748-82a6-368554491fbc" />
 
+4) MetaDatalar için propertyItem yönetimi yapılır. Şu anda her bir metadata için yeniden propertyItem tanımlanmaktadır. Tek bir propertyItem birden çok metadata içinde kullanılabilir. Bu noktada şu anda bir eksiklik bulunmaktadır.
+
+   <img width="2320" height="1584" alt="image" src="https://github.com/user-attachments/assets/bff7302e-860b-4383-b855-c32013298260" />
+
+5) UI Content tanımlamaları yapılabilmektedir. UI Content nesnenin ekranda nasıl gösterileceğini belirler.
+
+   <img width="2320" height="1510" alt="image" src="https://github.com/user-attachments/assets/c3a33407-e1bf-4d43-8397-7b591a60f195" />
+
+6) Classification CRUD işlemleri yapılabilmektedir.
+
+   <img width="2320" height="1510" alt="image" src="https://github.com/user-attachments/assets/94de6417-c49f-4189-9ab1-837183ade3d2" />
+
+7)Entity (Gerçek Nesne) CRUD işlemleri yapılabilmektedir. Gerçek nesneye default atanan property değerleri güncellenebilmektedir. Haritada sınıflandırma ve UI Content Detay içerikleri görülebilmektedir.
+
+  <img width="2320" height="1368" alt="image" src="https://github.com/user-attachments/assets/f58c6672-ad52-4fee-83e1-905548372608" />
+
+
+  <img width="2320" height="1432" alt="image" src="https://github.com/user-attachments/assets/92455ac8-4ac3-4761-8375-0e5f4fce15fd" />
+
+
+
+
