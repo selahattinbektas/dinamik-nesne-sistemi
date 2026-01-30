@@ -139,3 +139,14 @@
     </form>
   </div>
 </div>
+
+<div class="modal-backdrop" *ngIf="isDeleteErrorDialogOpen">
+    <div class="modal">
+        <h3 class="modal-title">Bilgi Mesajı</h3>
+        <p style="margin: 0 0 12px;">Classification silinemedi.</p>
+        <p style="margin: 0; color: #6b7280;">Sebep: {{ deleteErrorReason }}</p>
+        <div class="modal-actions">
+            <button type="button" class="secondary" (click)="closeDeleteErrorDialog()">Tamam</button>
+        </div>
+    </div>
+</div>

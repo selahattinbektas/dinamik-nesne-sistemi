@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MetadataApiService } from '../../../../core/api/metadata-api.service';
 import { MetaData, MetaDataClassification } from '../../../../core/models/metadata.models';
@@ -14,6 +15,8 @@ export class ClassificationsPageComponent implements OnInit {
   errorMessage = '';
   isEditDialogOpen = false;
   editClassificationId = '';
+  isDeleteErrorDialogOpen = false;
+  deleteErrorReason = '';
 
   form = this.fb.group({
     drawClassification: ['', Validators.required],
@@ -138,12 +141,18 @@ export class ClassificationsPageComponent implements OnInit {
         this.classifications = this.classifications.filter((row) => row.id !== item.id);
         this.isLoading = false;
       },
-      error: () => {
-        this.errorMessage = 'Classification silinemedi.';
-        this.isLoading = false;
+      error: (error) => {
+              this.deleteErrorReason = this.getDeleteErrorReason(error);
+              this.isDeleteErrorDialogOpen = true;
+              this.isLoading = false;
       }
     });
   }
+
+  closeDeleteErrorDialog(): void {
+      this.isDeleteErrorDialogOpen = false;
+      this.deleteErrorReason = '';
+    }
 
   private loadMetaData(): void {
     this.metadataApi.getAllMetaData().subscribe({
@@ -168,4 +177,44 @@ export class ClassificationsPageComponent implements OnInit {
       }
     });
   }
+
+    private getDeleteErrorReason(error: unknown): string {
+      if (error instanceof HttpErrorResponse) {
+        const payload = error.error;
+        if (typeof payload === 'string' && payload.trim()) {
+          return this.formatDeleteErrorReason(payload);
+        }
+        if (payload && typeof payload === 'object') {
+          const message = (payload as { message?: string }).message;
+          if (typeof message === 'string' && message.trim()) {
+            return this.formatDeleteErrorReason(message);
+          }
+          const errorText = (payload as { error?: string }).error;
+          if (typeof errorText === 'string' && errorText.trim()) {
+            return this.formatDeleteErrorReason(errorText);
+          }
+        }
+        if (error.message) {
+          return this.formatDeleteErrorReason(error.message);
+        }
+      }
+      if (error && typeof error === 'object' && 'message' in error) {
+        const message = (error as { message?: string }).message;
+        if (typeof message === 'string' && message.trim()) {
+          return this.formatDeleteErrorReason(message);
+        }
+      }
+      return 'Silme işlemi başarısız.';
+    }
+
+    private formatDeleteErrorReason(message: string): string {
+      const normalized = message.trim();
+      if (!normalized) {
+        return 'Silme işlemi başarısız.';
+      }
+      if (normalized.toLowerCase().includes('undeletable')) {
+        return 'Bu kayıt silinemez (undeletable).';
+      }
+      return normalized;
+    }
 }
