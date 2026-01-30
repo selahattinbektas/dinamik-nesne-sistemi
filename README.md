@@ -25,9 +25,11 @@ Kullanım
 ADIMLAR
 --------
 1) Option ekleme ve listeleme işlemleri yapılır. Burada property item name değerine göre gruplama yapılır.
+   Bir seçenek grubunun ait olduğu bir propertyItem vardır. (Örn: teamType -> DOST - DÜŞMAN)
+   
    <img width="2150" height="1444" alt="image" src="https://github.com/user-attachments/assets/cc0d0e12-e6cc-4a04-8683-82da128052e8" />
 
-2) Bir metedatayı name, entityType ve propertyItemList ile tek seferde oluşturmak için;
+3) Bir metedatayı name, entityType ve propertyItemList ile tek seferde oluşturmak için;
     POST - http://localhost:8080/api/metadata - http://localhost:8080/swagger-ui/index.html#/meta-data-controller/createMetaData
    Örnek Veri:
    {
